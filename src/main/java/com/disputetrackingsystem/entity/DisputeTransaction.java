@@ -1,0 +1,46 @@
+package com.disputetrackingsystem.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "dts_dispute_transaction")
+public class DisputeTransaction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "dispute_id")
+    private Dispute dispute;
+
+    @ManyToOne
+    @JoinColumn(name = "savings_account_transaction_id")
+    private SavingsAccountTransaction savingsAccountTransaction;
+
+    @Column(name = "dispute_entry_date")
+    @CreationTimestamp
+    private Timestamp disputeEntryDate;
+
+    @Column(name = "disputed_amount")
+    private Double disputedAmount;
+
+    @ManyToOne
+    @JoinColumn(name = "status")
+    private ConfigurableListDetails status;
+
+    @ManyToOne
+    @JoinColumn(name = "sub_status")
+    private ConfigurableListDetails subStatus;
+
+}
