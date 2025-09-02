@@ -10,8 +10,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@Table(name = "dts_debit_card")
+@Table(name = "dts_debit_cards")
 public class DebitCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +38,4 @@ public class DebitCard {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    public DebitCard(long cardNo, SavingsAccount savingsAccount, Timestamp debitCardIssuedDate, int expiryMonth, int expiryYear, int cvvNo, boolean isBlocked) {
-        this.cardNo = cardNo;
-        this.savingsAccount = savingsAccount;
-        this.debitCardIssuedDate = debitCardIssuedDate;
-        this.expiryMonth = expiryMonth;
-        this.expiryYear = expiryYear;
-        this.cvvNo = cvvNo;
-        this.isBlocked = isBlocked;
-    }
 }

@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
+
+@PreAuthorize("hasRole('AGENT')")
 @RestController
 @RequestMapping("/disputes")
 public class DisputeController {
@@ -29,34 +32,26 @@ public class DisputeController {
     @Autowired
     private ReasonService reasonService;
 
-    //CREATE DISPUTE    ##
-    @PostMapping("/create")
-    public Dispute createDispute(@RequestBody Dispute dispute) {
-        return disputeService.createDispute(dispute);
+    //CREATE DISPUTE
+    @PostMapping
+    public List<Dispute> createDispute(@RequestBody List<Dispute> disputes) {
+        return disputeService.createDispute(disputes);
     }
 
-    //VIEW DISPUTE BY ID    ##
+    //VIEW DISPUTE BY ID
     @GetMapping("/{id}")
     public Dispute getEachDispute(@PathVariable long id) {
         return disputeService.getDisputeById(id);
     }
 
-    //GET ALL DISPUTES WITH PAGINATION ##
-    @PreAuthorize("hasAuthority('DISPUTE_VIEW')")
+    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size)
-    {
+            @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("disputeCreatedDate").descending());
         Page<Dispute> disputes = disputeService.showAllDispute(pageable);
         return ResponseEntity.ok(disputes);
-    }
-
-    //GET ALL REASONS
-    @GetMapping("/reasons")
-    public List<Reason> getAllReasons() {
-        return reasonService.getAllReasons();
     }
 
     //UPDATE ONLY STATUS
@@ -85,4 +80,20 @@ public class DisputeController {
         Dispute updatedDispute = disputeService.updateDisputeStatusAndSubStatus(disputeId, statusName, subStatusName);
         return ResponseEntity.ok(updatedDispute);
     }
+
+    // DELETE DISPUTE BY ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDispute(@PathVariable Long id) {
+        disputeService.deleteDispute(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    //OPTIONAL
+    //GET ALL REASONS
+    @GetMapping("/reasons")
+    public List<Reason> getAllReasons() {
+        return reasonService.getAllReasons();
+    }
+
 }

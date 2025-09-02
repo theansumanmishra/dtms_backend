@@ -7,7 +7,7 @@ CREATE TABLE dts_users (
 CREATE TABLE dts_clients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    phone INT,
+    phone VARCHAR(10) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL
 );
 

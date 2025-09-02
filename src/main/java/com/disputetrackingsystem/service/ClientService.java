@@ -17,9 +17,14 @@ public class ClientService {
     @Autowired
     private DebitCardRepository debitCardRepository;
 
-    //CREATE CLIENTS
+    //CREATE CLIENT
     public Client saveClient(Client client) {
         return clientRepository.save(client);
+    }
+
+    //CREATE MULTIPLE CLIENTS
+    public List<Client> saveClients(List<Client> clients) {
+        return clientRepository.saveAll(clients);
     }
 
     //SHOW CLIENTS BY ID

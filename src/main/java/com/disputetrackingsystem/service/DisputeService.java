@@ -13,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class DisputeService {
 
@@ -29,33 +32,54 @@ public class DisputeService {
     private ConfigurableListDetails getStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
+
     private ConfigurableListDetails getsubStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
 
     //CREATE DISPUTES
-    public Dispute createDispute(Dispute dispute){
+    public List<Dispute> createDispute(List<Dispute> disputes) {
 
+        List<Dispute> savedDisputes = new ArrayList<>();
+        for (Dispute dispute : disputes) {
+            //Fetch ClientId
+            Long clientId = dispute.getClient().getId();
+
+            // Link ClientId
+            Client client = clientRepository.findById(clientId)
+                    .orElseThrow(() -> new RuntimeException("Client not found"));
+            dispute.setClient(client);
+
+            // Set initial status to INITIATED
+            ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
+            dispute.setStatus(initiatedStatus);
+
+            // Set initial sub-status to UNDER REVIEW
+            ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "UNDER REVIEW");
+            dispute.setSubStatus(initiatedSubStatus);
+
+            savedDisputes.add(disputeRepository.save(dispute));
+        }
+        return savedDisputes;
+
+        // Single Dispute Creation
         //Fetch ClientId
-        Long clientId = dispute.getClient().getId();
-
+//        Long clientId = dispute.getClient().getId();
+//
         // Link ClientId
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
-        dispute.setClient(client);
-
+//        Client client = clientRepository.findById(clientId)
+//                .orElseThrow(() -> new RuntimeException("Client not found"));
+//        dispute.setClient(client);
+//
         // Set initial status to INITIATED
-        ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
-        dispute.setStatus(initiatedStatus);
-
-        // Keep sub-status null initially
-        // dispute.setSubStatus(null);
-
-        // Set initial sub-status to PENDING
-        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("substatus", "PENDING");
-        dispute.setSubStatus(initiatedSubStatus);
-
-        return disputeRepository.save(dispute);
+//        ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
+//        dispute.setStatus(initiatedStatus);
+//
+        // Set initial sub-status to UNDER REVIEW
+//        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "UNDER REVIEW");
+//        dispute.setSubStatus(initiatedSubStatus);
+//
+//        return disputeRepository.save(dispute);
     }
 
     // UPDATE STATUS ONLY
@@ -69,7 +93,7 @@ public class DisputeService {
     // UPDATE SUB-STATUS ONLY
     public Dispute updateDisputeSubStatus(Long disputeId, String newSubStatusName) {
         Dispute dispute = getDisputeById(disputeId);
-        ConfigurableListDetails newSubStatus = getStatusByName("substatus", newSubStatusName);
+        ConfigurableListDetails newSubStatus = getStatusByName("sub_status", newSubStatusName);
         dispute.setSubStatus(newSubStatus);
         return disputeRepository.save(dispute);
     }
@@ -79,7 +103,7 @@ public class DisputeService {
         Dispute dispute = getDisputeById(disputeId);
 
         ConfigurableListDetails newStatus = getStatusByName("status", newStatusName);
-        ConfigurableListDetails newSubStatus = getStatusByName("substatus", newSubStatusName);
+        ConfigurableListDetails newSubStatus = getStatusByName("sub_status", newSubStatusName);
 
         dispute.setStatus(newStatus);
         dispute.setSubStatus(newSubStatus);
@@ -88,7 +112,7 @@ public class DisputeService {
     }
 
     //SHOW DISPUTE BY ID
-    public Dispute getDisputeById(Long id){
+    public Dispute getDisputeById(Long id) {
         return disputeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispute not found"));
     }
@@ -98,5 +122,13 @@ public class DisputeService {
         return disputeRepository.findAll(
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("disputeCreatedDate").descending())
         );
+    }
+
+    //DELETE DISPUTE BY ID
+    public void deleteDispute(Long id) {
+        if (!disputeRepository.existsById(id)) {
+            throw new RuntimeException("Dispute not found");
+        }
+        disputeRepository.deleteById(id);
     }
 }

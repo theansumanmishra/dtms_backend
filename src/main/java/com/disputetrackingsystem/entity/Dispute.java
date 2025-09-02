@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "dts_dispute")
+@Table(name = "dts_disputes")
 public class Dispute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,10 +44,6 @@ public class Dispute {
     @Column(name = "dispute_created_date")
     @CreationTimestamp
     private Date disputeCreatedDate;
-
-    @Column(name = "dispute_updated_date")
-    @UpdateTimestamp
-    private Date disputeUpdatedDate;
 
     @ManyToOne
     @JoinColumn(name = "status")

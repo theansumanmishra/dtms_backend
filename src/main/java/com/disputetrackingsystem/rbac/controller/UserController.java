@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping
 public class UserController {
 
     @Autowired
@@ -19,22 +19,29 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    //CREATE USER
+    //REGISTER USER
     @PreAuthorize("hasAuthority('CREATE_USER')")  //only user with CREATE_USER authority can create new user
-    @PostMapping
-    public User createUser(@RequestBody User user){
-        return userService.saveUser(user);
+    @PostMapping("/register")
+    public User createUser(@RequestBody User user) {
+        return userService.Register(user);
     }
 
     //SHOW ALL USER
-    @GetMapping
-    public List<User> getAllUsers(){
+    @PreAuthorize("hasAuthority('VIEW_USER')")  //only user with CREATE_USER authority can create new user
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
         return userService.getUserList();
     }
 
     //SHOW USER BY ID
-    @GetMapping("/{id}")
-    public User findUserById(@PathVariable Long id){
+    @GetMapping("/user/{id}")
+    public User findUserById(@PathVariable Long id) {
         return userService.getUserById(id);
+    }
+
+    //LOGIN USER
+    @PostMapping("/login")
+    public String loginUser(@RequestBody User user) {
+        return userService.verify(user);
     }
 }

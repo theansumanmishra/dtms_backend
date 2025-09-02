@@ -11,9 +11,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
-@Table(name = "dts_savings_account")
+@Table(name = "dts_savings_accounts")
 public class SavingsAccount {
 
     @Id
@@ -34,12 +33,4 @@ public class SavingsAccount {
 
     @Column(name = "is_blocked_for_debit")
     private boolean isBlockedForDebit;
-
-    public SavingsAccount(Client client, int balance, Timestamp accountCreationDate, boolean isBlockedForCredit, boolean isBlockedForDebit) {
-        this.client = client;
-        this.balance = balance;
-        this.accountCreationDate = accountCreationDate;
-        this.isBlockedForCredit = isBlockedForCredit;
-        this.isBlockedForDebit = isBlockedForDebit;
-    }
 }

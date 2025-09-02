@@ -27,9 +27,9 @@ public class SavingsAccountTransactionController {
 
 
     //GET ALL SAVINGS ACCOUNT TRANSACTIONS 90 DAYS##
-//    @GetMapping
-//    public List<SavingsAccountTransaction> getAllTransactions(@RequestParam("fetchOnlyLast90") boolean fetchOnlyLast90){
-//        return savingsAccountTransactionService.getAllTransactions();
-//    }
+    @GetMapping
+    public List<SavingsAccountTransaction> getAllTransactions(@RequestParam("fetchOnlyLast90") boolean fetchOnlyLast90){
+        return savingsAccountTransactionService.getAllTransactions();
+    }
 }
 

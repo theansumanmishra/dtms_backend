@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "dts_configurable_list_detail")
+@Table(name = "dts_configurable_list_details")
 public class ConfigurableListDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,11 +9,9 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "dts_configurable_list")
+@Table(name = "dts_configurable_lists")
 public class ConfigurableList {
 
     @Id

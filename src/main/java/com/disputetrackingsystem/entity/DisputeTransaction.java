@@ -12,9 +12,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "dts_dispute_transaction")
+@Table(name = "dts_dispute_transactions")
 public class DisputeTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "dts_savings_account_transaction")
+@Table(name = "dts_savings_account_transactions")
 public class SavingsAccountTransaction {
 
     @Id
