@@ -8,10 +8,12 @@ import com.disputetrackingsystem.service.DebitCardService;
 import com.disputetrackingsystem.service.SavingsAccountService;
 import com.disputetrackingsystem.service.SavingsAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('MANAGER')")
 @RestController
 @RequestMapping("/savingsaccounts")
 public class SavingsAccountController {
@@ -54,11 +56,11 @@ public class SavingsAccountController {
         return savingsAccountTransactionService.findBySavingsAccountId(savingsAccountId);
     }
 
-    //SHOW EACH TRANSACTION BY ID
-    @GetMapping("/{savingsaccountId}/transactions/{id}")
-    public SavingsAccountTransaction getTransactionById(@PathVariable Long id){
-        return savingsAccountTransactionService.getTransactionById(id);
-    }
+//    //SHOW EACH TRANSACTION BY ID
+//    @GetMapping("/{savingsaccountId}/transactions/{id}")
+//    public SavingsAccountTransaction getTransactionById(@PathVariable Long id){
+//        return savingsAccountTransactionService.getTransactionById(id);
+//    }
 
     //VIEW DEBIT-CARDS BY SAVINGS-ACCOUNT ID
     @GetMapping("{savingsAccountId}/debitcards")

@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
-@PreAuthorize("hasRole('AGENT')")
+@PreAuthorize("hasRole('DISPUTE_USER') or hasRole('MANAGER')")
 @RestController
 @RequestMapping("/disputes")
 public class DisputeController {
@@ -33,18 +33,21 @@ public class DisputeController {
     private ReasonService reasonService;
 
     //CREATE DISPUTE
+    @PreAuthorize("hasAuthority('CREATE_DISPUTE')")
     @PostMapping
-    public List<Dispute> createDispute(@RequestBody List<Dispute> disputes) {
-        return disputeService.createDispute(disputes);
+    public Dispute createDispute(@RequestBody Dispute dispute) {
+        return disputeService.createDispute(dispute);
     }
 
     //VIEW DISPUTE BY ID
+    @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping("/{id}")
     public Dispute getEachDispute(@PathVariable long id) {
         return disputeService.getDisputeById(id);
     }
 
     //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION
+    @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
             @RequestParam(defaultValue = "0") int page,
@@ -55,6 +58,7 @@ public class DisputeController {
     }
 
     //UPDATE ONLY STATUS
+    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
     @PutMapping("/{disputeId}/status")
     public ResponseEntity<Dispute> updateOnlyStatus(
             @PathVariable Long disputeId,
@@ -64,6 +68,7 @@ public class DisputeController {
     }
 
     //UPDATE ONLY SUB-STATUS
+    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
     @PutMapping("/{disputeId}/substatus")
     public Dispute updateOnlySubStatus(
             @PathVariable Long disputeId,
@@ -72,6 +77,7 @@ public class DisputeController {
     }
 
     // UPDATE BOTH STATUS AND SUB-STATUS
+    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
     @PutMapping("/{disputeId}/status-and-substatus")
     public ResponseEntity<Dispute> updateStatusAndSubStatus(
             @PathVariable Long disputeId,
@@ -82,14 +88,13 @@ public class DisputeController {
     }
 
     // DELETE DISPUTE BY ID
+    @PreAuthorize("hasAuthority('MANAGE_DISPUTE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDispute(@PathVariable Long id) {
+    public ResponseEntity<String> deleteDispute(@PathVariable Long id) {
         disputeService.deleteDispute(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Dispute with ID " + id + " has been deleted.");
     }
 
-
-    //OPTIONAL
     //GET ALL REASONS
     @GetMapping("/reasons")
     public List<Reason> getAllReasons() {

@@ -11,12 +11,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "dts_reasons")
+@Table(name = "dts_dispute_reasons")
 public class Reason {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "reason", nullable = false, unique = true)
+    private  String name;
+
+    @Column(name = "reason_description", nullable = false, unique = true)
     private String message;
 }

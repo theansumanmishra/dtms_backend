@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Generated;
 
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -23,32 +23,41 @@ public class Dispute {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @Column(name = "payment_rail")
+    // e.g: UPI, card, NEFT
+    @Column(name = "payment_rail", nullable = false)
     private String paymentRail;
 
-    @Column(name = "payment_rail_instance_id")
-    private Integer paymentRailInstanceId;
+    // ref id
+    @Generated
+    @Column(name = "payment_rail_instance_id", nullable = false,
+            updatable = false,
+            insertable = false,
+            columnDefinition = "UUID DEFAULT gen_random_uuid()")
+    private UUID paymentRailInstanceId;
 
-    @Column(name = "dispute_source")
+    // Email, branch visit, website
+    @Column(name = "dispute_source", nullable = false)
     private String disputeSource;
 
-    @Column(name="dispute_summary")
+    @Column(name="dispute_summary", nullable = false)
     private String disputeSummary;
 
-    @Column(name = "dispute_description")
+    @Column(name = "dispute_description", nullable = false)
     private String disputeDescription;
 
-    @Column(name = "dispute_created_date")
+    @Column(name = "dispute_created_date", nullable = false)
     @CreationTimestamp
     private Date disputeCreatedDate;
 
+    // initiated, in_progress, closed
     @ManyToOne
     @JoinColumn(name = "status")
     private ConfigurableListDetails status;
 
+    // accepted, partial-accepted, rejected
     @ManyToOne
     @JoinColumn(name = "sub_status")
     private ConfigurableListDetails subStatus;

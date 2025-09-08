@@ -1,7 +1,7 @@
-package com.disputetrackingsystem.rbac;
+package com.disputetrackingsystem.security;
 
-import com.disputetrackingsystem.rbac.service.CustomUserDetailsService;
-import com.disputetrackingsystem.rbac.service.JWTService;
+import com.disputetrackingsystem.security.service.CustomUserDetailsService;
+import com.disputetrackingsystem.security.service.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-public class jwtFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     ApplicationContext context;
@@ -26,8 +26,15 @@ public class jwtFilter extends OncePerRequestFilter {
     private JWTService jwtService;
 
     @Override
+
     //if this filter is a success then only the request is passed to the next filter in the chain
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // Skip filter for /login
+        if (request.getServletPath().equals("/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;

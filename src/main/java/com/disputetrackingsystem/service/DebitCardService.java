@@ -5,6 +5,7 @@ import com.disputetrackingsystem.entity.SavingsAccount;
 import com.disputetrackingsystem.repository.DebitCardRepository;
 import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public class DebitCardService {
     @Autowired
     SavingsAccountRepository savingsAccountRepository;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     //CREATE DEBIT CARD BY SAVINGS ACCOUNT ID
     public DebitCard createDebitCard(DebitCard debitCard){
         //FETCH SAVINGS ACCOUNT ID
@@ -25,6 +28,11 @@ public class DebitCardService {
         SavingsAccount savingsAccount = savingsAccountRepository.findById(savingsAccountId)
                 .orElseThrow(() -> new RuntimeException("Savings Account not found"));
         debitCard.setSavingsAccount(savingsAccount);
+
+        //ENCODE DEBIT-CARD PIN
+        String cryptPin = String.valueOf(debitCard.getPin());
+        debitCard.setPin(encoder.encode(cryptPin));
+
         return debitCardRepository.save(debitCard);
     }
 

@@ -1,9 +1,11 @@
 package com.disputetrackingsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,4 +22,7 @@ public class Client {
 
     private String email;
 
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("client-savings")   // handles one-to-one forward
+    private SavingsAccount savingsAccount;
 }

@@ -5,12 +5,14 @@ import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
 import com.disputetrackingsystem.service.DebitCardService;
 import com.disputetrackingsystem.service.SavingsAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('MANAGER')")
 @RestController
-@RequestMapping("/savingsaccounttransactions")
+@RequestMapping("/transactions")
 public class SavingsAccountTransactionController {
 
     @Autowired
@@ -25,11 +27,22 @@ public class SavingsAccountTransactionController {
         return savingsAccountTransactionService.createSavingsAccountTransaction(savingsAccountTransaction);
     }
 
-
     //GET ALL SAVINGS ACCOUNT TRANSACTIONS 90 DAYS##
-    @GetMapping
-    public List<SavingsAccountTransaction> getAllTransactions(@RequestParam("fetchOnlyLast90") boolean fetchOnlyLast90){
-        return savingsAccountTransactionService.getAllTransactions();
+    @GetMapping("/{savingsAccountId}")
+    public List<SavingsAccountTransaction> getTransactions(
+            @PathVariable Long savingsAccountId,
+            @RequestParam(value = "fetchOnlyLast90", required = false, defaultValue = "false") boolean fetchOnlyLast90) {
+
+        if (fetchOnlyLast90) {
+            return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
+        } else {
+            return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
+        }
+    }
+
+    @GetMapping("/{id}/similar")
+    public List<SavingsAccountTransaction> getTransactionsBySameSubType(@PathVariable Long id) {
+        return savingsAccountTransactionService.getTransactionsBySameSubType(id);
     }
 }
 

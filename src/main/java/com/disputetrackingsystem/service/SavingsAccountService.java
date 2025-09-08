@@ -34,6 +34,7 @@ public class SavingsAccountService {
 
     //SAVINGS ACCOUNT BY ID
     public SavingsAccount getAccountById(long id){
-        return savingsAccountRepository.findById(id).orElseThrow(()->new RuntimeException("Savings Account doesn't exist"));
+        return savingsAccountRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("Savings Account doesn't exist"));
     }
 }

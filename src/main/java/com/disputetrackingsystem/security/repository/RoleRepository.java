@@ -1,6 +1,6 @@
-package com.disputetrackingsystem.rbac.repository;
+package com.disputetrackingsystem.security.repository;
 
-import com.disputetrackingsystem.rbac.model.Role;
+import com.disputetrackingsystem.security.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

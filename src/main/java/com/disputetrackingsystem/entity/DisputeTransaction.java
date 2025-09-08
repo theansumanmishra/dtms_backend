@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -28,7 +29,7 @@ public class DisputeTransaction {
 
     @Column(name = "dispute_entry_date")
     @CreationTimestamp
-    private Timestamp disputeEntryDate;
+    private Date disputeEntryDate;
 
     @Column(name = "disputed_amount")
     private Double disputedAmount;

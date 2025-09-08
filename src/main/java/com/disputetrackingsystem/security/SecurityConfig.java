@@ -1,6 +1,6 @@
-package com.disputetrackingsystem.rbac;
+package com.disputetrackingsystem.security;
 
-import com.disputetrackingsystem.rbac.service.CustomUserDetailsService;
+import com.disputetrackingsystem.security.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private jwtFilter jwtFilter;
+    private JwtFilter jwtFilter;
 
     //Create a bean of AuthenticationManager to authenticate the user credentials from the DB
     //AuthenticationManager is the main strategy interface for authentication

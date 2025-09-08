@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.rbac.model;
+package com.disputetrackingsystem.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

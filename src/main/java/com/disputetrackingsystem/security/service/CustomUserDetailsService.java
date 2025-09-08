@@ -1,20 +1,13 @@
-package com.disputetrackingsystem.rbac.service;
+package com.disputetrackingsystem.security.service;
 
-import com.disputetrackingsystem.rbac.model.Permission;
-import com.disputetrackingsystem.rbac.model.Role;
-import com.disputetrackingsystem.rbac.model.User;
-import com.disputetrackingsystem.rbac.model.UserPrinciple;
-import com.disputetrackingsystem.rbac.repository.UserRepository;
+import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.security.model.UserPrinciple;
+import com.disputetrackingsystem.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

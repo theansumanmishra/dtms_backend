@@ -5,8 +5,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @NoArgsConstructor
@@ -27,23 +32,18 @@ public class SavingsAccountTransaction {
     @JoinColumn(name = "debit_card_id", nullable = false)
     private DebitCard debitCard;
 
+    @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "account_created")
-    private Timestamp accountCreated;
+    @Column(name = "transaction_date", nullable = false)
+    @CreationTimestamp
+    private LocalDateTime transactionDate;
 
-    @Column(name = "transaction_type")
+    //e.g: credit,debit
+    @Column(name = "transaction_type", nullable = false)
     private String transactionType;
 
-    @Column(name = "transaction_sub_type")
-    private String transactionSubType;
-
-    public SavingsAccountTransaction(SavingsAccount savingsAccount, DebitCard debitCard, Double amount, Timestamp accountCreated, String transactionType, String transactionSubType) {
-        this.savingsAccount = savingsAccount;
-        this.debitCard = debitCard;
-        this.amount = amount;
-        this.accountCreated = accountCreated;
-        this.transactionType = transactionType;
-        this.transactionSubType = transactionSubType;
-    }
+    //e.g: ATM,POS
+    @Column(name = "transaction_mode", nullable = false)
+    private String transactionMode;
 }

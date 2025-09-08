@@ -1,12 +1,14 @@
 package com.disputetrackingsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -14,23 +16,32 @@ import java.util.List;
 @Entity
 @Table(name = "dts_savings_accounts")
 public class SavingsAccount {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @JsonBackReference("client-savings")   // prevent infinite loop
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    private int balance;
+    @Column(name = "account_number", nullable = false)
+    private long accountNumber;
+
+    @Column(nullable = false)
+    private double balance;
 
     @Column(name = "account_creation_date")
-    private Timestamp accountCreationDate;
+    @CreationTimestamp
+    private Date accountCreationDate;
 
     @Column(name = "is_blocked_for_credit")
     private boolean isBlockedForCredit;
 
     @Column(name = "is_blocked_for_debit")
     private boolean isBlockedForDebit;
+
+    @OneToMany(mappedBy = "savingsAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("savings-debitcards")
+    private List<DebitCard> debitCards = new ArrayList<>();
 }

@@ -1,7 +1,7 @@
-package com.disputetrackingsystem.rbac.service;
+package com.disputetrackingsystem.security.service;
 
-import com.disputetrackingsystem.rbac.model.User;
-import com.disputetrackingsystem.rbac.repository.UserRepository;
+import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,6 +41,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    //UPDATE USER
+    public User updateUser(User existingUser) {
+        return userRepository.save(existingUser);
+    }
+
+    //AUTHENTICATE USER
     public String verify(User user) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

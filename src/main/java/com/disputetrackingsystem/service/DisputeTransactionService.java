@@ -56,7 +56,7 @@ public class DisputeTransactionService {
         disputeTransaction.setStatus(initiatedStatus);
 
         // Set initial sub-status to PENDING
-        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("substatus", "PENDING");
+        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "UNDER REVIEW");
         disputeTransaction.setSubStatus(initiatedSubStatus);
 
         return disputeTransactionRepository.save(disputeTransaction);
