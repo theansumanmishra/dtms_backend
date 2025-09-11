@@ -28,6 +28,7 @@ public class ClientController {
         return clientService.saveClient(client);
     }
 
+    //CREATE MULTIPLE CLIENTS
 //    @PostMapping
 //    public ResponseEntity<List<Client>> createClients(@RequestBody List<Client> clients){
 //        List<Client> savedClients = clientService.saveClients(clients);
@@ -61,5 +62,18 @@ public class ClientController {
     public ResponseEntity<String> deleteClient(Long id) {
         clientService.deleteClient(id);
         return ResponseEntity.ok("Client with ID " + id + " has been deleted.");
+    }
+
+    //FIND CLIENT BY NAME
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Client> getClientByName(@PathVariable String name){
+        Client client = clientService.findByClientName(name);
+        return ResponseEntity.ok(client);
+    }
+
+    //FIND CLIENT BY PHONE NUMBER
+    @GetMapping("/phone/{phone}")
+    public ResponseEntity<Client> findClientByPhone(@PathVariable String phone){
+        return ResponseEntity.ok(clientService.findClientByPhone(phone));
     }
 }

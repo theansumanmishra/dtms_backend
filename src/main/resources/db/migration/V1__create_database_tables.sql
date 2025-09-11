@@ -26,6 +26,7 @@ CREATE TABLE dts_savings_accounts (
 CREATE TABLE dts_debit_cards (
     id SERIAL PRIMARY KEY,
     savings_account_id INT REFERENCES dts_savings_accounts(id) NOT NULL,
+    card_type VARCHAR(100) NOT NULL,
     card_no BIGINT UNIQUE NOT NULL,
     debit_card_issued_date DATE NOT NULL DEFAULT CURRENT_DATE,
     expiry_month INT NOT NULL,
@@ -39,8 +40,12 @@ CREATE TABLE dts_savings_account_transactions (
     id SERIAL PRIMARY KEY,
     savings_account_id INT REFERENCES dts_savings_accounts(id) NOT NULL,
     debit_card_id INT REFERENCES dts_debit_cards(id) NOT NULL,
-    amount DOUBLE PRECISION NOT NULL,
+    amount NUMERIC(12,2) NOT NULL,
     transaction_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    payment_rail VARCHAR(100) NOT NULL,
+    payment_rail_instance_id UUID DEFAULT gen_random_uuid() NOT NULL,
+    merchant_name VARCHAR(100) NOT NULL,
+    merchant_category VARCHAR(100) NOT NULL,
     transaction_type VARCHAR(100) NOT NULL,
     transaction_mode VARCHAR(100) NOT NULL,
     disputable BOOLEAN DEFAULT FALSE
@@ -49,12 +54,11 @@ CREATE TABLE dts_savings_account_transactions (
 CREATE TABLE dts_disputes (
     id SERIAL PRIMARY KEY,
     client_id INT REFERENCES dts_clients(id) NOT NULL,
-    payment_rail VARCHAR(255) NOT NULL,
-    payment_rail_instance_id UUID NOT NULL DEFAULT gen_random_uuid(),
-    dispute_source VARCHAR(255) NOT NULL,
-    dispute_summary VARCHAR(255),
-    dispute_description VARCHAR(255),
-    dispute_created_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    transaction_id INT REFERENCES dts_savings_account_transactions(id) NOT NULL,
+    source VARCHAR(255) NOT NULL,
+    reason VARCHAR(255),
+    description VARCHAR(255),
+    created_date DATE NOT NULL DEFAULT CURRENT_DATE,
     status INT NOT NULL,
     sub_status INT NOT NULL
 );
@@ -64,7 +68,7 @@ CREATE TABLE dts_dispute_transactions (
     dispute_id INT REFERENCES dts_disputes(id) NOT NULL,
     savings_account_transaction_id INT REFERENCES dts_savings_account_transactions(id) NOT NULL,
     dispute_entry_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    disputed_amount DOUBLE PRECISION NOT NULL,
+    disputed_amount NUMERIC(12,2) NOT NULL,
     status INT ,
     sub_status INT
 );

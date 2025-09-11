@@ -3,6 +3,7 @@ package com.disputetrackingsystem.service;
 import com.disputetrackingsystem.entity.Client;
 import com.disputetrackingsystem.repository.ClientRepository;
 import com.disputetrackingsystem.repository.DebitCardRepository;
+import com.disputetrackingsystem.security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,5 +51,17 @@ public class ClientService {
             throw new RuntimeException("Client not found");
         }
         clientRepository.deleteById(id);
+    }
+
+    //FIND USER BY USERNAME
+    public Client findByClientName(String name){
+        return clientRepository.findClientByName(name)
+                .orElseThrow(()-> new RuntimeException("Client not Found"));
+    }
+
+    //FIND USER BY PHONE NUMBER
+    public Client findClientByPhone(String phone){
+        return clientRepository.findClientByPhone(phone)
+                .orElseThrow(()-> new RuntimeException("Client not Found"));
     }
 }

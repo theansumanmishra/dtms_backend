@@ -25,6 +25,9 @@ public class DebitCard {
     @JsonBackReference("savings-debitcards")
     private SavingsAccount savingsAccount;
 
+    @Column(name = "card_type")
+    private String cardType;
+
     @Column(name = "card_no", unique = true, nullable = false)
     private Long cardNo;
 

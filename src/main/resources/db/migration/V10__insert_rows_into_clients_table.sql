@@ -1,13 +1,22 @@
--- Insert multiple rows into the dts_clients table
 INSERT INTO dts_clients (name, phone, email)
 VALUES
-('Amit Sharma', '+91-9876543210', 'amit.sharma@example.com'),
-('Priya Verma', '+91-8765432109', 'priya.verma@example.com'),
-('Ravi Kumar', '+91-7654321098', 'ravi.kumar@example.com'),
-('Sneha Patel', '+91-6543210987', 'sneha.patel@example.com'),
-('Arjun Reddy', '+91-5432109876', 'arjun.reddy@example.com'),
-('Neha Singh', '+91-4321098765', 'neha.singh@example.com'),
-('Karan Mehta', '+91-3210987654', 'karan.mehta@example.com'),
-('Pooja Iyer', '+91-2109876543', 'pooja.iyer@example.com'),
-('Vikram Das', '+91-1098765432', 'vikram.das@example.com'),
-('Anjali Nair', '+91-9988776655', 'anjali.nair@example.com');
+('Amit Sharma', '9876543210', 'amit.sharma@gmail.com'),
+('Priya Verma', '9123456789', 'priya.verma@yahoo.com'),
+('Rohit Kumar', '9811122233', 'rohit.kumar@gmail.com'),
+('Sneha Iyer', '9765432109', 'sneha.iyer@yahoo.in'),
+('Arjun Reddy', '9845098765', 'arjun.reddy@gmail.com'),
+('Neha Gupta', '9911223344', 'neha.gupta@hotmail.com'),
+('Sandeep Nair', '9898989898', 'sandeep.nair@gmail.com'),
+('Ankita Singh', '9823456781', 'ankita.singh@yahoo.com'),
+('Karan Malhotra', '9955443322', 'karan.malhotra@gmail.com'),
+('Divya Menon', '9797979797', 'divya.menon@outlook.com'),
+('Vikram Joshi', '9911334455', 'vikram.joshi@gmail.com'),
+('Ritika Agarwal', '9877001122', 'ritika.agarwal@yahoo.com'),
+('Aditya Deshmukh', '9933445566', 'aditya.deshmukh@gmail.com'),
+('Shreya Pillai', '9812345678', 'shreya.pillai@yahoo.in'),
+('Manish Chawla', '9890112233', 'manish.chawla@gmail.com'),
+('Pooja Rathi', '9922113344', 'pooja.rathi@yahoo.com'),
+('Rajesh Patel', '9789898989', 'rajesh.patel@gmail.com'),
+('Meera Krishnan', '9900123456', 'meera.krishnan@yahoo.com'),
+('Siddharth Saxena', '9822003344', 'siddharth.saxena@gmail.com'),
+('Anjali Mehta', '9798654321', 'anjali.mehta@yahoo.in');

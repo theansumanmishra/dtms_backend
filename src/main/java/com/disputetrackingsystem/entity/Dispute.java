@@ -14,8 +14,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "dts_disputes")
 public class Dispute {
     @Id
@@ -26,29 +24,21 @@ public class Dispute {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    // e.g: UPI, card, NEFT
-    @Column(name = "payment_rail", nullable = false)
-    private String paymentRail;
-
-    // ref id
-    @Generated
-    @Column(name = "payment_rail_instance_id", nullable = false,
-            updatable = false,
-            insertable = false,
-            columnDefinition = "UUID DEFAULT gen_random_uuid()")
-    private UUID paymentRailInstanceId;
+    @ManyToOne
+    @JoinColumn(name = "transaction_id", nullable = false)
+    private SavingsAccountTransaction transaction;
 
     // Email, branch visit, website
-    @Column(name = "dispute_source", nullable = false)
+    @Column(name = "source", nullable = false)
     private String disputeSource;
 
-    @Column(name="dispute_summary", nullable = false)
-    private String disputeSummary;
+    @Column(name="reason", nullable = false)
+    private String disputeReason;
 
-    @Column(name = "dispute_description", nullable = false)
+    @Column(name = "description", nullable = false)
     private String disputeDescription;
 
-    @Column(name = "dispute_created_date", nullable = false)
+    @Column(name = "created_date", nullable = false)
     @CreationTimestamp
     private Date disputeCreatedDate;
 
@@ -61,5 +51,5 @@ public class Dispute {
     @ManyToOne
     @JoinColumn(name = "sub_status")
     private ConfigurableListDetails subStatus;
-
 }
+

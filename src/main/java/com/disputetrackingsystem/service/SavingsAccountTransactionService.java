@@ -49,10 +49,10 @@ public class SavingsAccountTransactionService {
     }
 
 //    //TRANSACTIONS BY TNX ID
-//    public SavingsAccountTransaction getTransactionById(Long id){
-//        return savingsAccountTransactionRepository.findById(id)
-//                .orElseThrow(()->new RuntimeException("Transaction not found"));
-//    }
+    public SavingsAccountTransaction getTransactionById(Long id){
+        return savingsAccountTransactionRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("Transaction not found"));
+    }
 //
 //    //GET ALL SAVINGS ACCOUNT TRANSACTIONS
 //    public List<SavingsAccountTransaction> getAllTransactions(){

@@ -1,10 +1,12 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.entity.DebitCard;
+import com.disputetrackingsystem.entity.Dispute;
 import com.disputetrackingsystem.entity.SavingsAccount;
 import com.disputetrackingsystem.entity.SavingsAccountTransaction;
 import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import com.disputetrackingsystem.service.DebitCardService;
+import com.disputetrackingsystem.service.DisputeService;
 import com.disputetrackingsystem.service.SavingsAccountService;
 import com.disputetrackingsystem.service.SavingsAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class SavingsAccountController {
 
     @Autowired
     private SavingsAccountTransactionService savingsAccountTransactionService;
+
+    @Autowired
+    private DisputeService disputeService;
 
     //CREATE SAVINGS ACCOUNT ##
     @PostMapping
@@ -57,10 +62,15 @@ public class SavingsAccountController {
     }
 
 //    //SHOW EACH TRANSACTION BY ID
-//    @GetMapping("/{savingsaccountId}/transactions/{id}")
-//    public SavingsAccountTransaction getTransactionById(@PathVariable Long id){
-//        return savingsAccountTransactionService.getTransactionById(id);
-//    }
+    @GetMapping("/{savingsaccountId}/transactions/{transactionId}")
+    public SavingsAccountTransaction getTransactionById(@PathVariable Long transactionId){
+        return savingsAccountTransactionService.getTransactionById(transactionId);
+    }
+
+    @PostMapping("/{savingsaccountId}/transactions/{transactionId}/createDispute")
+    public Dispute createDispute(@RequestBody Dispute dispute) {
+        return disputeService.createDispute(dispute);
+    }
 
     //VIEW DEBIT-CARDS BY SAVINGS-ACCOUNT ID
     @GetMapping("{savingsAccountId}/debitcards")
