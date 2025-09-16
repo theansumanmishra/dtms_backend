@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Generated;
+import org.springframework.data.domain.Persistable;
 
 import java.sql.Date;
 import java.util.UUID;
@@ -21,26 +22,21 @@ public class Dispute {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
-
-    @ManyToOne
     @JoinColumn(name = "transaction_id", nullable = false)
-    private SavingsAccountTransaction transaction;
+    private SavingsAccountTransaction savingsAccountTransaction;
 
     // Email, branch visit, website
     @Column(name = "source", nullable = false)
-    private String disputeSource;
+    private String source;
 
     @Column(name="reason", nullable = false)
-    private String disputeReason;
+    private String reason;
 
     @Column(name = "description", nullable = false)
-    private String disputeDescription;
+    private String description;
 
     @Column(name = "created_date", nullable = false)
-    @CreationTimestamp
-    private Date disputeCreatedDate;
+    private Date createdDate;
 
     // initiated, in_progress, closed
     @ManyToOne
@@ -52,4 +48,5 @@ public class Dispute {
     @JoinColumn(name = "sub_status")
     private ConfigurableListDetails subStatus;
 }
+
 

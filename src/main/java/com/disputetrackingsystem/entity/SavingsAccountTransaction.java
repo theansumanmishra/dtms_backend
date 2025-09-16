@@ -33,7 +33,6 @@ public class SavingsAccountTransaction {
     private BigDecimal amount;
 
     @Column(name = "transaction_date", nullable = false)
-    @CreationTimestamp
     private LocalDateTime transactionDate;
 
     // e.g: UPI, card, NEFT
@@ -65,4 +64,3 @@ public class SavingsAccountTransaction {
     @Column(nullable = false)
     private boolean disputable;
 }
-

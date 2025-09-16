@@ -1,5 +1,6 @@
 package com.disputetrackingsystem.controller;
 
+import com.disputetrackingsystem.DTO.DisputeStatusUpdateRequest;
 import com.disputetrackingsystem.entity.Dispute;
 import com.disputetrackingsystem.entity.Reason;
 import com.disputetrackingsystem.repository.DisputeRepository;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
-@PreAuthorize("hasRole('DISPUTE_USER') or hasRole('MANAGER')")
 @RestController
 @RequestMapping("/disputes")
 public class DisputeController {
@@ -32,7 +32,7 @@ public class DisputeController {
     @Autowired
     private ReasonService reasonService;
 
-    //CREATE DISPUTE
+    //RAISE DISPUTE
     @PreAuthorize("hasAuthority('CREATE_DISPUTE')")
     @PostMapping
     public Dispute createDispute(@RequestBody Dispute dispute) {
@@ -51,39 +51,42 @@ public class DisputeController {
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("disputeCreatedDate").descending());
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Dispute> disputes = disputeService.showAllDispute(pageable);
         return ResponseEntity.ok(disputes);
     }
 
-    //UPDATE ONLY STATUS
-    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
-    @PutMapping("/{disputeId}/status")
-    public ResponseEntity<Dispute> updateOnlyStatus(
-            @PathVariable Long disputeId,
-            @RequestParam String statusName) {
-        Dispute updatedDispute = disputeService.updateDisputeStatus(disputeId, statusName);
-        return ResponseEntity.ok(updatedDispute);
-    }
-
-    //UPDATE ONLY SUB-STATUS
-    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
-    @PutMapping("/{disputeId}/substatus")
-    public Dispute updateOnlySubStatus(
-            @PathVariable Long disputeId,
-            @RequestParam String subStatusName) {
-        return disputeService.updateDisputeSubStatus(disputeId, subStatusName);
-    }
+//    //UPDATE ONLY STATUS
+//    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
+//    @PutMapping("/{disputeId}/status")
+//    public ResponseEntity<Dispute> updateOnlyStatus(
+//            @PathVariable Long disputeId,
+//            @RequestParam String statusName) {
+//        Dispute updatedDispute = disputeService.updateDisputeStatus(disputeId, statusName);
+//        return ResponseEntity.ok(updatedDispute);
+//    }
+//
+//    //UPDATE ONLY SUB-STATUS
+//    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
+//    @PutMapping("/{disputeId}/substatus")
+//    public Dispute updateOnlySubStatus(
+//            @PathVariable Long disputeId,
+//            @RequestParam String subStatusName) {
+//        return disputeService.updateDisputeSubStatus(disputeId, subStatusName);
+//    }
 
     // UPDATE BOTH STATUS AND SUB-STATUS
     @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
-    @PutMapping("/{disputeId}/status-and-substatus")
+    @PutMapping("/{disputeId}")
     public ResponseEntity<Dispute> updateStatusAndSubStatus(
             @PathVariable Long disputeId,
-            @RequestParam String statusName,
-            @RequestParam String subStatusName) {
-        Dispute updatedDispute = disputeService.updateDisputeStatusAndSubStatus(disputeId, statusName, subStatusName);
+            @RequestBody DisputeStatusUpdateRequest request) {
+        Dispute updatedDispute = disputeService.updateDisputeStatusAndSubStatus(
+                disputeId,
+                request.getStatusName(),
+                request.getSubStatusName()
+        );
         return ResponseEntity.ok(updatedDispute);
     }
 
@@ -100,5 +103,5 @@ public class DisputeController {
     public List<Reason> getAllReasons() {
         return reasonService.getAllReasons();
     }
-
 }
+

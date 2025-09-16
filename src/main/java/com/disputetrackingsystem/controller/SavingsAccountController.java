@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('MANAGER')")
 @RestController
 @RequestMapping("/savingsaccounts")
 public class SavingsAccountController {
@@ -61,12 +60,14 @@ public class SavingsAccountController {
         return savingsAccountTransactionService.findBySavingsAccountId(savingsAccountId);
     }
 
-//    //SHOW EACH TRANSACTION BY ID
+    //SHOW EACH TRANSACTION BY ID
     @GetMapping("/{savingsaccountId}/transactions/{transactionId}")
     public SavingsAccountTransaction getTransactionById(@PathVariable Long transactionId){
         return savingsAccountTransactionService.getTransactionById(transactionId);
     }
 
+    //CREATE DISPUTE
+    @PreAuthorize("hasAuthority('CREATE_DISPUTE')")
     @PostMapping("/{savingsaccountId}/transactions/{transactionId}/createDispute")
     public Dispute createDispute(@RequestBody Dispute dispute) {
         return disputeService.createDispute(dispute);

@@ -1,5 +1,8 @@
-INSERT INTO dts_users (username, password)
+INSERT INTO dts_users (name, email, username, password)
 VALUES
-('admin', '$2a$12$50QTeT4UJbLXtaTyZn7RYeZzfksCZRfBvFv6H2PMqPFA6wtITxNYu'),          --admin,admin123
-('dispute_user', '$2a$12$u/LZ7QUWEdwu7XdwGACyAuKaM3kALWzdoCnLv04Qt4ODr6M.yElQm'),   --user,user123
-('manager', '$2a$12$Mu6k0G7Ux9cPPpXtxXJ4/OdJTOkGaA0O..G9T5scUZ60qjB.CZBtG');        --manager,manager123
+('Ansuman Mishra', 'jubu123@gmail.com', 'user1','$2a$12$eRm1ymRIIHbAjI4SWW8v3uuYKiuUmMcsGb3CPQ54NzXJ5diIDRetC'),
+('Jubu Mehta', 'jubu123@gmail.com', 'user2','$2a$12$zwwK6yyz90v/J02rWQ/96.u2NX0ui8eDlm26c1VAA02LGGgPyVDXi'),
+('Sourabh Patra', 'jubu123@gmail.com', 'user3','$2a$12$TyoGXGfM/iYS/XkZqwzs4e6XAFsVfHKDAJ09EQtYJ4X1y9gM3bH4W'),
+('Sohan Mishra', 'jubu123@gmail.com', 'user4','$2a$12$gYEld.2d1OKwSKFhYQf7t.P5hMbRCS5fKzfnL7EjEkKB63ssHHTJq'),
+('Rohit Sharma', 'jubu123@gmail.com', 'user5','$2a$12$GBAP/NdyZW9v15Edk2AZPeVq7hQiwjNE4r98YiOvxHfrVJlVJ0MYC'),
+('Badass Ravi Kumar', 'jubu123@gmail.com', 'user6','$2a$12$aERLnK7Bd8u8kP731WwMaOKuBlNCFQvg2Rt0tkTR/3Q0B10t04L4C');

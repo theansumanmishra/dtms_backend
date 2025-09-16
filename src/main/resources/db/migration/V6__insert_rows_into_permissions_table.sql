@@ -15,3 +15,4 @@ VALUES
     (10, 'VIEW_DISPUTE', 'Permission to view dispute details'),
     (11, 'REVIEW_DISPUTE', 'Permission to review and update dispute status'),
     (12, 'MANAGE_DISPUTE', 'Permission to manage all disputes');
+

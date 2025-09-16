@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('MANAGER')")
 @RestController
 @RequestMapping("/transactions")
 public class SavingsAccountTransactionController {
@@ -33,11 +32,7 @@ public class SavingsAccountTransactionController {
             @PathVariable Long savingsAccountId,
             @RequestParam(value = "fetchOnlyLast90", required = false, defaultValue = "false") boolean fetchOnlyLast90) {
 
-        if (fetchOnlyLast90) {
-            return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
-        } else {
-            return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
-        }
+        return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
     }
 
     @GetMapping("/{id}/similar")

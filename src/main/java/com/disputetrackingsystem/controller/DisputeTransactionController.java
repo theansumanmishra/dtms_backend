@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('DISPUTE_USER') or hasRole('MANAGER')")
 @RestController
 @RequestMapping("/disputeTransaction")
 public class DisputeTransactionController {

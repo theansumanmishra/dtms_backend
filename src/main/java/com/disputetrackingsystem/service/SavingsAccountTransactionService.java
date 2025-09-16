@@ -53,7 +53,7 @@ public class SavingsAccountTransactionService {
         return savingsAccountTransactionRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Transaction not found"));
     }
-//
+
 //    //GET ALL SAVINGS ACCOUNT TRANSACTIONS
 //    public List<SavingsAccountTransaction> getAllTransactions(){
 //        return savingsAccountTransactionRepository.findAll();
@@ -71,10 +71,11 @@ public class SavingsAccountTransactionService {
         SavingsAccountTransaction clickedTransaction = savingsAccountTransactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        // Step 2: Extract its type (ATM or POS)
+        // Step 2: Fetch all with same mode[ATM/POS] and accountNo
         String mode = clickedTransaction.getTransactionMode();
+        Long savingsAccountId = clickedTransaction.getSavingsAccount().getId();
 
         // Step 3: Fetch all with same mode
-        return savingsAccountTransactionRepository.findByTransactionMode(mode);
+        return savingsAccountTransactionRepository.findBySavingsAccountIdAndTransactionModeAndIdNot(savingsAccountId, mode, id);
     }
 }

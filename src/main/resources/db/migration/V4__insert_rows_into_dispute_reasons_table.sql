@@ -6,4 +6,6 @@ VALUES
     (4, 'INCORRECT AMOUNT', 'The amount charged is incorrect'),
     (5, 'SERVICE NOT RECEIVED', 'The customer did not receive the service'),
     (6, 'CHARGED AFTER CANCEL', 'The customer was charged after canceling the transaction'),
-    (7, 'POS NOT COMPLETED', 'POS transaction approved but purchase not completed');
+    (7, 'POS NOT COMPLETED', 'POS transaction approved but purchase not completed'),
+    (8, 'OTHERS', 'Client has reasons other than the listed reasons');
+

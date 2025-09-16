@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('MANAGER')")
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
@@ -65,6 +64,7 @@ public class ClientController {
     }
 
     //FIND CLIENT BY NAME
+    @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping("/name/{name}")
     public ResponseEntity<Client> getClientByName(@PathVariable String name){
         Client client = clientService.findByClientName(name);
@@ -72,6 +72,7 @@ public class ClientController {
     }
 
     //FIND CLIENT BY PHONE NUMBER
+    @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping("/phone/{phone}")
     public ResponseEntity<Client> findClientByPhone(@PathVariable String phone){
         return ResponseEntity.ok(clientService.findClientByPhone(phone));

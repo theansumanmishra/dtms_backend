@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('MANAGER')")
 @RestController
 @RequestMapping("/debitcards")
 public class DebitCardController {

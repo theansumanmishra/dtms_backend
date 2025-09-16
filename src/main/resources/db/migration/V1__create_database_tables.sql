@@ -2,6 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE dts_users (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
 );
@@ -53,12 +55,11 @@ CREATE TABLE dts_savings_account_transactions (
 
 CREATE TABLE dts_disputes (
     id SERIAL PRIMARY KEY,
-    client_id INT REFERENCES dts_clients(id) NOT NULL,
     transaction_id INT REFERENCES dts_savings_account_transactions(id) NOT NULL,
     source VARCHAR(255) NOT NULL,
     reason VARCHAR(255),
     description VARCHAR(255),
-    created_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_date DATE NOT NULL,
     status INT NOT NULL,
     sub_status INT NOT NULL
 );
