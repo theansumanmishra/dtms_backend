@@ -1,9 +1,9 @@
 package com.disputetrackingsystem.controller;
 
-import com.disputetrackingsystem.entity.DebitCard;
-import com.disputetrackingsystem.entity.Dispute;
-import com.disputetrackingsystem.entity.SavingsAccount;
-import com.disputetrackingsystem.entity.SavingsAccountTransaction;
+import com.disputetrackingsystem.model.DebitCard;
+import com.disputetrackingsystem.model.Dispute;
+import com.disputetrackingsystem.model.SavingsAccount;
+import com.disputetrackingsystem.model.SavingsAccountTransaction;
 import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import com.disputetrackingsystem.service.DebitCardService;
 import com.disputetrackingsystem.service.DisputeService;

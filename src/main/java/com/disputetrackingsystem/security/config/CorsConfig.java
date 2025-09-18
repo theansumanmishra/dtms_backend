@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.security;
+package com.disputetrackingsystem.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

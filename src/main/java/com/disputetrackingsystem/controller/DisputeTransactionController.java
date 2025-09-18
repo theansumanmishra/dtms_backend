@@ -1,10 +1,9 @@
 package com.disputetrackingsystem.controller;
 
-import com.disputetrackingsystem.entity.DisputeTransaction;
+import com.disputetrackingsystem.model.DisputeTransaction;
 import com.disputetrackingsystem.repository.DisputeTransactionRepository;
 import com.disputetrackingsystem.service.DisputeTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

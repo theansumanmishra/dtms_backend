@@ -4,6 +4,16 @@ public class DisputeStatusUpdateRequest {
     private String statusName;
     private String subStatusName;
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    private String comments;
+
     public String getStatusName() {
         return statusName;
     }

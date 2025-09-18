@@ -1,15 +1,14 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.entity.DebitCard;
-import com.disputetrackingsystem.entity.SavingsAccount;
-import com.disputetrackingsystem.entity.SavingsAccountTransaction;
+import com.disputetrackingsystem.model.DebitCard;
+import com.disputetrackingsystem.model.SavingsAccount;
+import com.disputetrackingsystem.model.SavingsAccountTransaction;
 import com.disputetrackingsystem.repository.DebitCardRepository;
 import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,11 +1,11 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.entity.Client;
+import com.disputetrackingsystem.model.Client;
 import com.disputetrackingsystem.repository.ClientRepository;
 import com.disputetrackingsystem.repository.DebitCardRepository;
-import com.disputetrackingsystem.security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +24,6 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
-    //CREATE MULTIPLE CLIENTS
-//    public List<Client> saveClients(List<Client> clients) {
-//        return clientRepository.saveAll(clients);
-//    }
-
     //SHOW CLIENTS BY ID
     public Client getClientById(Long id) {
         return clientRepository.findById(id)
@@ -36,8 +31,8 @@ public class ClientService {
     }
 
     //SHOW ALL CLIENTS
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public Page<Client> getAllClients(Pageable pageable) {
+        return clientRepository.findAll(pageable);
     }
 
     //UPDATE CLIENTS
@@ -53,15 +48,9 @@ public class ClientService {
         clientRepository.deleteById(id);
     }
 
-    //FIND USER BY USERNAME
-    public Client findByClientName(String name){
-        return clientRepository.findClientByName(name)
-                .orElseThrow(()-> new RuntimeException("Client not Found"));
-    }
-
-    //FIND USER BY PHONE NUMBER
-    public Client findClientByPhone(String phone){
-        return clientRepository.findClientByPhone(phone)
-                .orElseThrow(()-> new RuntimeException("Client not Found"));
+    public List<Client> searchClients(String keyword) {
+        return clientRepository
+                .findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrPhoneContainingIgnoreCase(
+                        keyword, keyword, keyword);
     }
 }

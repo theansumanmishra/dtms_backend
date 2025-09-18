@@ -1,16 +1,11 @@
-package com.disputetrackingsystem.entity;
+package com.disputetrackingsystem.model;
 
+import com.disputetrackingsystem.security.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Generated;
-import org.springframework.data.domain.Persistable;
 
 import java.sql.Date;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -37,6 +32,16 @@ public class Dispute {
 
     @Column(name = "created_date", nullable = false)
     private Date createdDate;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "reviewed_by", nullable = true)
+    private User reviewedBy;
+
+    private String Comments;
 
     // initiated, in_progress, closed
     @ManyToOne

@@ -1,6 +1,6 @@
 package com.disputetrackingsystem.repository;
 
-import com.disputetrackingsystem.entity.ConfigurableListDetails;
+import com.disputetrackingsystem.model.ConfigurableListDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

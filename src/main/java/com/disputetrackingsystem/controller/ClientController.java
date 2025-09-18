@@ -1,9 +1,12 @@
 package com.disputetrackingsystem.controller;
 
-import com.disputetrackingsystem.entity.Client;
+import com.disputetrackingsystem.model.Client;
 import com.disputetrackingsystem.repository.ClientRepository;
 import com.disputetrackingsystem.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +30,6 @@ public class ClientController {
         return clientService.saveClient(client);
     }
 
-    //CREATE MULTIPLE CLIENTS
-//    @PostMapping
-//    public ResponseEntity<List<Client>> createClients(@RequestBody List<Client> clients){
-//        List<Client> savedClients = clientService.saveClients(clients);
-//        return ResponseEntity.ok(savedClients);
-//    }
-
     //SHOW CLIENT BY ID
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping("{id}")
@@ -44,8 +40,12 @@ public class ClientController {
     //SHOW ALL CLIENTS
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping
-    public List<Client> showAllClients() {
-        return clientService.getAllClients();
+    public ResponseEntity<Page<Client>> getAllClient(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Client> clients = clientService.getAllClients(pageable);
+        return ResponseEntity.ok(clients);
     }
 
     //UPDATE CLIENTS
@@ -63,18 +63,11 @@ public class ClientController {
         return ResponseEntity.ok("Client with ID " + id + " has been deleted.");
     }
 
-    //FIND CLIENT BY NAME
+    // API for live search / autocomplete
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
-    @GetMapping("/name/{name}")
-    public ResponseEntity<Client> getClientByName(@PathVariable String name){
-        Client client = clientService.findByClientName(name);
-        return ResponseEntity.ok(client);
-    }
-
-    //FIND CLIENT BY PHONE NUMBER
-    @PreAuthorize("hasAuthority('VIEW_CLIENT')")
-    @GetMapping("/phone/{phone}")
-    public ResponseEntity<Client> findClientByPhone(@PathVariable String phone){
-        return ResponseEntity.ok(clientService.findClientByPhone(phone));
+    @GetMapping("/search")
+    public ResponseEntity<List<Client>> searchClients(@RequestParam String keyword) {
+        List<Client> clients = clientService.searchClients(keyword);
+        return ResponseEntity.ok(clients);
     }
 }

@@ -1,8 +1,8 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.DTO.DisputeStatusUpdateRequest;
-import com.disputetrackingsystem.entity.Dispute;
-import com.disputetrackingsystem.entity.Reason;
+import com.disputetrackingsystem.model.Dispute;
+import com.disputetrackingsystem.model.Reason;
 import com.disputetrackingsystem.repository.DisputeRepository;
 import com.disputetrackingsystem.service.DisputeService;
 import com.disputetrackingsystem.service.ReasonService;
@@ -16,8 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/disputes")
@@ -57,25 +55,6 @@ public class DisputeController {
         return ResponseEntity.ok(disputes);
     }
 
-//    //UPDATE ONLY STATUS
-//    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
-//    @PutMapping("/{disputeId}/status")
-//    public ResponseEntity<Dispute> updateOnlyStatus(
-//            @PathVariable Long disputeId,
-//            @RequestParam String statusName) {
-//        Dispute updatedDispute = disputeService.updateDisputeStatus(disputeId, statusName);
-//        return ResponseEntity.ok(updatedDispute);
-//    }
-//
-//    //UPDATE ONLY SUB-STATUS
-//    @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
-//    @PutMapping("/{disputeId}/substatus")
-//    public Dispute updateOnlySubStatus(
-//            @PathVariable Long disputeId,
-//            @RequestParam String subStatusName) {
-//        return disputeService.updateDisputeSubStatus(disputeId, subStatusName);
-//    }
-
     // UPDATE BOTH STATUS AND SUB-STATUS
     @PreAuthorize("hasAuthority('REVIEW_DISPUTE')")
     @PutMapping("/{disputeId}")
@@ -85,7 +64,8 @@ public class DisputeController {
         Dispute updatedDispute = disputeService.updateDisputeStatusAndSubStatus(
                 disputeId,
                 request.getStatusName(),
-                request.getSubStatusName()
+                request.getSubStatusName(),
+                request.getComments()
         );
         return ResponseEntity.ok(updatedDispute);
     }

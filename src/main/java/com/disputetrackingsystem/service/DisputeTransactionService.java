@@ -1,9 +1,9 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.entity.ConfigurableListDetails;
-import com.disputetrackingsystem.entity.Dispute;
-import com.disputetrackingsystem.entity.DisputeTransaction;
-import com.disputetrackingsystem.entity.SavingsAccountTransaction;
+import com.disputetrackingsystem.model.ConfigurableListDetails;
+import com.disputetrackingsystem.model.Dispute;
+import com.disputetrackingsystem.model.DisputeTransaction;
+import com.disputetrackingsystem.model.SavingsAccountTransaction;
 import com.disputetrackingsystem.repository.ConfigurableListDetailsRepository;
 import com.disputetrackingsystem.repository.DisputeRepository;
 import com.disputetrackingsystem.repository.DisputeTransactionRepository;

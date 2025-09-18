@@ -60,6 +60,9 @@ CREATE TABLE dts_disputes (
     reason VARCHAR(255),
     description VARCHAR(255),
     created_date DATE NOT NULL,
+    created_by BIGINT NOT NULL REFERENCES dts_users(id),
+    reviewed_by BIGINT REFERENCES dts_users(id),
+    comments VARCHAR(255),
     status INT NOT NULL,
     sub_status INT NOT NULL
 );

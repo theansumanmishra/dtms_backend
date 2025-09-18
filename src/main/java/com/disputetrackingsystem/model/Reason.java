@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.entity;
+package com.disputetrackingsystem.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

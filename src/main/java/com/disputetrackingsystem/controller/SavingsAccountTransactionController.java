@@ -1,11 +1,9 @@
 package com.disputetrackingsystem.controller;
 
-import com.disputetrackingsystem.entity.SavingsAccountTransaction;
+import com.disputetrackingsystem.model.SavingsAccountTransaction;
 import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
-import com.disputetrackingsystem.service.DebitCardService;
 import com.disputetrackingsystem.service.SavingsAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

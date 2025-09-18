@@ -1,6 +1,6 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.entity.Reason;
+import com.disputetrackingsystem.model.Reason;
 import com.disputetrackingsystem.repository.ReasonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

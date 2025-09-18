@@ -1,7 +1,7 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.entity.Client;
-import com.disputetrackingsystem.entity.SavingsAccount;
+import com.disputetrackingsystem.model.Client;
+import com.disputetrackingsystem.model.SavingsAccount;
 import com.disputetrackingsystem.repository.ClientRepository;
 import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;

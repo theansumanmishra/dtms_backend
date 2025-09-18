@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.security;
+package com.disputetrackingsystem.security.config;
 
 import com.disputetrackingsystem.security.service.CustomUserDetailsService;
 import com.disputetrackingsystem.security.service.JWTService;
@@ -22,12 +22,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     ApplicationContext context;
+
     @Autowired
     private JWTService jwtService;
 
-    @Override
-
-    //if this filter is a success then only the request is passed to the next filter in the chain
+    @Override   //if this filter is a success then only the request is passed to the next filter in the chain
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Skip filter for /login
         if (request.getServletPath().equals("/login")) {

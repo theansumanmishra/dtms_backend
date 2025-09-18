@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.entity;
+package com.disputetrackingsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

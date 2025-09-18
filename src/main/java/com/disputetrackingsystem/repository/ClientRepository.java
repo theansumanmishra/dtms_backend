@@ -1,12 +1,11 @@
 package com.disputetrackingsystem.repository;
 
-import com.disputetrackingsystem.entity.Client;
-import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.model.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import java.util.List;
 
 public interface ClientRepository extends JpaRepository <Client, Long>{
-    Optional<Client> findClientByName(String name);
-    Optional<Client> findClientByPhone(String phone);
+    // Search by name, email, or phone (partial, case-insensitive match)
+    List<Client> findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrPhoneContainingIgnoreCase(
+            String name, String email, String phone);
 }

@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.security;
+package com.disputetrackingsystem.security.config;
 
 import com.disputetrackingsystem.security.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
