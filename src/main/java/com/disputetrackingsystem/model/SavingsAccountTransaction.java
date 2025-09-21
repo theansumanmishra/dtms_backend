@@ -14,7 +14,6 @@ import java.util.UUID;
 @Setter
 @Table(name = "dts_savings_account_transactions")
 public class SavingsAccountTransaction {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,7 +37,6 @@ public class SavingsAccountTransaction {
     private String paymentRail;
 
     // ref id
-    @Generated
     @Column(name = "payment_rail_instance_id", nullable = false,
             updatable = false,
             insertable = false,

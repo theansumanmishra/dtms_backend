@@ -10,10 +10,19 @@ import com.disputetrackingsystem.security.model.User;
 import com.disputetrackingsystem.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DisputeService {
@@ -59,8 +68,8 @@ public class DisputeService {
         // Set initial status to INITIATED
         ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
         dispute.setStatus(initiatedStatus);
-        // Set initial sub-status to UNDER REVIEW
-        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "UNDER REVIEW");
+        // Set initial sub-status to PENDING REVIEW
+        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "PENDING REVIEW");
         dispute.setSubStatus(initiatedSubStatus);
 
         return disputeRepository.save(dispute);
@@ -73,8 +82,78 @@ public class DisputeService {
     }
 
     //SHOW ALL DISPUTES
-    public Page<Dispute> showAllDispute(Pageable pageable) {
-        return disputeRepository.findAll(pageable);
+//    public Page<Dispute> showAllDispute(Pageable pageable) {
+//        return disputeRepository.findAll(pageable);
+//    }
+
+    //SHOW FILTERED DISPUTES(ALL/UNREVIEWED)
+    public Page<Dispute> showAllDispute(Pageable pageable, String filter) {
+        if ("pending-review".equalsIgnoreCase(filter)) {
+            return disputeRepository.findByReviewedByIsNull(
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdDate").descending())
+            );
+        } else {
+            // default: all disputes
+            return disputeRepository.findAll(
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdDate").descending())
+            );
+        }
+    }
+
+    //SHOW FILTERED DISPUTES(BY ACCOUNT NUMBER)
+    public Page<Dispute> getDisputesByAccountNumber(long accountNumber, Pageable pageable) {
+        return disputeRepository
+                .findBySavingsAccountTransaction_SavingsAccount_AccountNumber(accountNumber, pageable);
+    }
+
+    //SHOW DISPUTE DASHBOARD
+    public Map<String, Object> getDashboardStats() {
+        Map<String, Object> dashboardData = new HashMap<>();
+
+        // STATUS WISE COUNT (query using DB uppercase, return nice labels)
+        Map<String, Long> subStatusCounts = new HashMap<>();
+        subStatusCounts.put("Pending Review", disputeRepository.countBySubStatus_NameIgnoreCase("PENDING REVIEW"));
+        subStatusCounts.put("Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("ACCEPTED"));
+        subStatusCounts.put("Rejected", disputeRepository.countBySubStatus_NameIgnoreCase("REJECTED"));
+        subStatusCounts.put("Partially Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("PARTIALLY ACCEPTED"));
+
+        // TIME BASED COUNT
+        Map<String, Long> timeCounts = new HashMap<>();
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime now = LocalDateTime.now();
+
+        // convert LocalDateTime → java.util.Date
+        Date startOfTodayDate = Date.from(startOfToday.atZone(ZoneId.systemDefault()).toInstant());
+        Date nowDate = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+
+        // Today
+        timeCounts.put("Today", disputeRepository.countByCreatedDateBetween(startOfTodayDate, nowDate));
+
+        // This Week
+        timeCounts.put("This Week", disputeRepository.countByCreatedDateAfter(
+                Date.from(today.minusWeeks(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+        ));
+
+        // This Month
+        timeCounts.put("This Month", disputeRepository.countByCreatedDateAfter(
+                Date.from(today.minusMonths(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+        ));
+
+        // This Year
+        timeCounts.put("This Year", disputeRepository.countByCreatedDateAfter(
+                Date.from(today.minusYears(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+        ));
+
+        // Total
+        timeCounts.put("Total", disputeRepository.count());
+
+        dashboardData.put("subStatusCounts", subStatusCounts);
+        dashboardData.put("timeCounts", timeCounts);
+
+        return dashboardData;
+
     }
 
     //DELETE DISPUTE BY ID

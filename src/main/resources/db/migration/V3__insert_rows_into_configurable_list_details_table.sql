@@ -6,4 +6,4 @@ VALUES
     (4, 2, 'ACCEPTED', 'The dispute has been accepted'),
     (5, 2, 'REJECTED', 'The dispute has been rejected'),
     (6, 2, 'PARTIALLY ACCEPTED', 'The dispute has been partially accepted'),
-    (7, 2, 'UNDER REVIEW', 'The dispute is under review by the relevant team');
+    (7, 2, 'PENDING REVIEW', 'The dispute is under review by the relevant team');

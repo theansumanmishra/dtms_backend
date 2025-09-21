@@ -14,8 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/disputes")
@@ -44,15 +44,34 @@ public class DisputeController {
         return disputeService.getDisputeById(id);
     }
 
-    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION
+    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION & UNREVIEWED
     @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "all") String filter) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Dispute> disputes = disputeService.showAllDispute(pageable);
+        Page<Dispute> disputes = disputeService.showAllDispute(pageable, filter);
         return ResponseEntity.ok(disputes);
+    }
+
+    //GET DISPUTES BY ACCOUNT NUMBER
+    @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<Dispute>> getDisputesByAccountNumber(
+            @RequestParam long accountNumber,
+            Pageable pageable
+    ) {
+        Page<Dispute> disputes = disputeService.getDisputesByAccountNumber(accountNumber, pageable);
+        return ResponseEntity.ok(disputes);
+    }
+
+    // GET DISPUTE DASHBOARD DATA
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        return ResponseEntity.ok(disputeService.getDashboardStats());
     }
 
     // UPDATE BOTH STATUS AND SUB-STATUS

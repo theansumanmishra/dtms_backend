@@ -53,5 +53,3 @@ public class Dispute {
     @JoinColumn(name = "sub_status")
     private ConfigurableListDetails subStatus;
 }
-
-
