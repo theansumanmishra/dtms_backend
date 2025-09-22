@@ -97,10 +97,16 @@ public class DisputeController {
         return ResponseEntity.ok("Dispute with ID " + id + " has been deleted.");
     }
 
-    //GET ALL REASONS
+    // GET ALL REASONS
     @GetMapping("/reasons")
     public List<Reason> getAllReasons() {
         return reasonService.getAllReasons();
     }
-}
 
+    // GET RECENT DISPUTES(TOP 10)
+    @GetMapping("/recent")
+    public ResponseEntity<List<Dispute>> getRecentDisputes() {
+        List<Dispute> recentDisputes = disputeService.getRecentDisputes();
+        return ResponseEntity.ok(recentDisputes);
+    }
+}

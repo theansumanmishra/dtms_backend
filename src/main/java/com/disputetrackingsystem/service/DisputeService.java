@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -80,11 +81,6 @@ public class DisputeService {
         return disputeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispute not found"));
     }
-
-    //SHOW ALL DISPUTES
-//    public Page<Dispute> showAllDispute(Pageable pageable) {
-//        return disputeRepository.findAll(pageable);
-//    }
 
     //SHOW FILTERED DISPUTES(ALL/UNREVIEWED)
     public Page<Dispute> showAllDispute(Pageable pageable, String filter) {
@@ -188,5 +184,22 @@ public class DisputeService {
         dispute.setReviewedBy(manager);
 
         return disputeRepository.save(dispute);
+    }
+
+    //GET DISPUTE STATS FOR USER
+    public Map<String, Long> getDisputeStatsForCurrentUser(Long userId) {
+        Object result = disputeRepository.getDisputeStatsForUser(userId);
+        Object[] counts = (Object[]) result;
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("disputesCreated", ((Number) counts[0]).longValue());
+        stats.put("disputesReviewed", ((Number) counts[1]).longValue());
+
+        return stats;
+    }
+
+    //GET RECCENT DISPUTES
+    public List<Dispute> getRecentDisputes() {
+        return disputeRepository.findTop10ByOrderByCreatedDateDesc();
     }
 }
