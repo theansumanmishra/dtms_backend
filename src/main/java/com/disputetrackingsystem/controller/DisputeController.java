@@ -84,7 +84,8 @@ public class DisputeController {
                 disputeId,
                 request.getStatusName(),
                 request.getSubStatusName(),
-                request.getComments()
+                request.getComments(),
+                request.getRefund()
         );
         return ResponseEntity.ok(updatedDispute);
     }

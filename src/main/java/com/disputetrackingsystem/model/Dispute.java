@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 @Entity
@@ -40,6 +41,8 @@ public class Dispute {
     @ManyToOne
     @JoinColumn(name = "reviewed_by", nullable = true)
     private User reviewedBy;
+
+    private BigDecimal refund;
 
     private String Comments;
 

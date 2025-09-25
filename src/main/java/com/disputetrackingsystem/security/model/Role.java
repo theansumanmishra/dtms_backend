@@ -19,7 +19,7 @@ public class Role {
     @Column(nullable=false, unique=true)
     private String name;
 
-    @JsonIgnore                     // 👈 prevents infinite recursion
+    @JsonIgnore                     // prevents infinite recursion
     @ManyToMany(mappedBy = "roles")  // "roles" is the field name in User entity
     private Set<User> users = new HashSet<>();
 

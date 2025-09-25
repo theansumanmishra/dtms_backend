@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -164,7 +165,8 @@ public class DisputeService {
     public Dispute updateDisputeStatusAndSubStatus(Long disputeId,
                                                    String newStatusName,
                                                    String newSubStatusName,
-                                                   String comments) {
+                                                   String comments,
+                                                   BigDecimal refund) {
         Dispute dispute = getDisputeById(disputeId);
 
         ConfigurableListDetails newStatus = getStatusByName("status", newStatusName);
@@ -173,6 +175,7 @@ public class DisputeService {
         dispute.setStatus(newStatus);
         dispute.setSubStatus(newSubStatus);
         dispute.setComments(comments);
+        dispute.setRefund(refund);
 
         // Set reviewedBy = logged-in manager
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -198,7 +201,7 @@ public class DisputeService {
         return stats;
     }
 
-    //GET RECCENT DISPUTES
+    //GET RECENT DISPUTES
     public List<Dispute> getRecentDisputes() {
         return disputeRepository.findTop10ByOrderByCreatedDateDesc();
     }

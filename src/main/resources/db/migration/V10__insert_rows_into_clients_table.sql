@@ -1,6 +1,6 @@
 INSERT INTO dts_clients (name, phone, email)
 VALUES
-('Subhashree Dutta', '6371942674', 'subhashree.sahoo@example.com'),
+('Duttatreya Dutta', '6371942674', 'duttatreya.dutta@example.com'),
 ('Ananya Verma', '9123456780', 'ananya.verma@example.com'),
 ('Rohan Gupta', '9988776655', 'rohan.gupta@example.com'),
 ('Isha Kapoor', '9012345678', 'isha.kapoor@example.com'),

@@ -1,5 +1,6 @@
 package com.disputetrackingsystem.security.controller;
 
+import com.disputetrackingsystem.DTO.AuthResponse;
 import com.disputetrackingsystem.DTO.UserDTO;
 import com.disputetrackingsystem.security.model.Role;
 import com.disputetrackingsystem.security.model.User;
@@ -36,8 +37,7 @@ public class UserController {
     @Autowired
     private DisputeService disputeService;
 
-    //REGISTER USER
-    @PreAuthorize("hasAuthority('CREATE_USER')")  //only user with CREATE_USER authority can create new user
+    //CREATE USER
     @PostMapping("/register")
     public User createUser(@RequestBody User user) {
         return userService.Register(user);
@@ -64,16 +64,11 @@ public class UserController {
         return ResponseEntity.ok(stats);
     }
 
-
     //UPDATE USER
     @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PutMapping("/users/{id}")
     public User updateUser(@RequestBody User user, @PathVariable Long id) {
-        User existingUser = userService.getUserById(id);
-        existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setRoles(user.getRoles());
-        return userService.updateUser(existingUser);
+        return userService.updateUser(id, user);
     }
 
     //DELETE USER
@@ -87,6 +82,7 @@ public class UserController {
         return "User deleted successfully";
     }
 
+    //GET INDIVIDUAL USER
     @GetMapping("users/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -108,6 +104,7 @@ public class UserController {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
+                user.getPhone(),
                 user.getUsername(),
                 roles
         );
@@ -117,8 +114,8 @@ public class UserController {
 
     //LOGIN USER
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        String token = userService.verify(user);
-        return ResponseEntity.ok("{\"accessToken\":\"" + token + "\"}");
+    public ResponseEntity<AuthResponse> login(@RequestBody User user) {
+        AuthResponse response = userService.verify(user);
+        return ResponseEntity.ok(response);
     }
 }

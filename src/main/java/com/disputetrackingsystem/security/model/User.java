@@ -20,10 +20,11 @@ public class User {
 
     private String email;
 
-    @Column(nullable = false, unique = true)
+    private Long phone;
+
+    @Column(unique = true)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

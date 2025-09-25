@@ -1,8 +1,20 @@
 package com.disputetrackingsystem.DTO;
 
+import java.math.BigDecimal;
+
 public class DisputeStatusUpdateRequest {
     private String statusName;
     private String subStatusName;
+    private String comments;
+    private BigDecimal refund;
+
+    public BigDecimal getRefund() {
+        return refund;
+    }
+
+    public void setRefund(BigDecimal refund) {
+        this.refund = refund;
+    }
 
     public String getComments() {
         return comments;
@@ -11,8 +23,6 @@ public class DisputeStatusUpdateRequest {
     public void setComments(String comments) {
         this.comments = comments;
     }
-
-    private String comments;
 
     public String getStatusName() {
         return statusName;

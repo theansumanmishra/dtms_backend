@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-public interface DisputeRepository extends JpaRepository <Dispute, Long> {
+public interface DisputeRepository extends JpaRepository<Dispute, Long> {
+
     // Find User by reviewed by
     Page<Dispute> findByReviewedByIsNull(Pageable pageable);
 
@@ -21,6 +22,7 @@ public interface DisputeRepository extends JpaRepository <Dispute, Long> {
 
     // Find Dispute by Day,Week,Month & Year
     long countByCreatedDateBetween(Date start, Date end);
+
     long countByCreatedDateAfter(Date date);
 
     // Find Dispute by Account Number
@@ -31,11 +33,11 @@ public interface DisputeRepository extends JpaRepository <Dispute, Long> {
 
     // Get Dispute Status for user
     @Query("""
-    SELECT 
-        SUM(CASE WHEN d.createdBy.id = :userId THEN 1 ELSE 0 END),
-        SUM(CASE WHEN d.reviewedBy.id = :userId THEN 1 ELSE 0 END)
-    FROM Dispute d
-""")
+                SELECT 
+                    SUM(CASE WHEN d.createdBy.id = :userId THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN d.reviewedBy.id = :userId THEN 1 ELSE 0 END)
+                FROM Dispute d
+            """)
     Object getDisputeStatsForUser(@Param("userId") Long userId);
 
     // Get top 10 recent disputes by createdDate
