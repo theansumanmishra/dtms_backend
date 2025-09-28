@@ -7,17 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
 
-    // Find User by reviewed by
+    //SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
     Page<Dispute> findByReviewedByIsNull(Pageable pageable);
+    Page<Dispute> findBySubStatus_NameIgnoreCase(String name, Pageable pageable);
 
-    // Sort Disputes by Sub-Status
+    // Count Disputes by Sub-Status
     Long countBySubStatus_NameIgnoreCase(String subStatusName);
 
     // Find Dispute by Day,Week,Month & Year
@@ -31,7 +30,7 @@ public interface DisputeRepository extends JpaRepository<Dispute, Long> {
             Pageable pageable
     );
 
-    // Get Dispute Status for user
+    // Get Dispute Raise Stat for individual user
     @Query("""
                 SELECT 
                     SUM(CASE WHEN d.createdBy.id = :userId THEN 1 ELSE 0 END),

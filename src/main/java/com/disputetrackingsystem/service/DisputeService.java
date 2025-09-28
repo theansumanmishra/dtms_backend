@@ -45,7 +45,6 @@ public class DisputeService {
     private ConfigurableListDetails getStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
-
     private ConfigurableListDetails getsubStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
@@ -71,7 +70,7 @@ public class DisputeService {
         ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
         dispute.setStatus(initiatedStatus);
         // Set initial sub-status to PENDING REVIEW
-        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "PENDING REVIEW");
+        ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "PENDING_REVIEW");
         dispute.setSubStatus(initiatedSubStatus);
 
         return disputeRepository.save(dispute);
@@ -83,21 +82,26 @@ public class DisputeService {
                 .orElseThrow(() -> new RuntimeException("Dispute not found"));
     }
 
-    //SHOW FILTERED DISPUTES(ALL/UNREVIEWED)
+    //SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
     public Page<Dispute> showAllDispute(Pageable pageable, String filter) {
+        PageRequest pageRequest = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("createdDate").descending()
+        );
+
         if ("pending-review".equalsIgnoreCase(filter)) {
-            return disputeRepository.findByReviewedByIsNull(
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdDate").descending())
-            );
+            return disputeRepository.findByReviewedByIsNull(pageRequest);
+        } else if ("under-review".equalsIgnoreCase(filter)) {
+            return disputeRepository.findBySubStatus_NameIgnoreCase("UNDER_REVIEW", pageRequest);
+        } else if ("pending-verification".equalsIgnoreCase(filter)) {
+            return disputeRepository.findBySubStatus_NameIgnoreCase("PENDING_VERIFICATION", pageRequest);
         } else {
-            // default: all disputes
-            return disputeRepository.findAll(
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdDate").descending())
-            );
+            return disputeRepository.findAll(pageRequest);
         }
     }
 
-    //SHOW FILTERED DISPUTES(BY ACCOUNT NUMBER)
+    //SHOW DISPUTES BY ACCOUNT NUMBER
     public Page<Dispute> getDisputesByAccountNumber(long accountNumber, Pageable pageable) {
         return disputeRepository
                 .findBySavingsAccountTransaction_SavingsAccount_AccountNumber(accountNumber, pageable);
@@ -109,10 +113,11 @@ public class DisputeService {
 
         // STATUS WISE COUNT (query using DB uppercase, return nice labels)
         Map<String, Long> subStatusCounts = new HashMap<>();
-        subStatusCounts.put("Pending Review", disputeRepository.countBySubStatus_NameIgnoreCase("PENDING REVIEW"));
+        subStatusCounts.put("Pending Review", disputeRepository.countBySubStatus_NameIgnoreCase("PENDING_REVIEW"));
+        subStatusCounts.put("Under Review", disputeRepository.countBySubStatus_NameIgnoreCase("UNDER_REVIEW"));
         subStatusCounts.put("Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("ACCEPTED"));
         subStatusCounts.put("Rejected", disputeRepository.countBySubStatus_NameIgnoreCase("REJECTED"));
-        subStatusCounts.put("Partially Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("PARTIALLY ACCEPTED"));
+        subStatusCounts.put("Partially Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("PARTIALLY_ACCEPTED"));
 
         // TIME BASED COUNT
         Map<String, Long> timeCounts = new HashMap<>();
@@ -150,7 +155,6 @@ public class DisputeService {
         dashboardData.put("timeCounts", timeCounts);
 
         return dashboardData;
-
     }
 
     //DELETE DISPUTE BY ID
@@ -166,7 +170,8 @@ public class DisputeService {
                                                    String newStatusName,
                                                    String newSubStatusName,
                                                    String comments,
-                                                   BigDecimal refund) {
+                                                   BigDecimal refund,
+                                                   Boolean vendorVerified) {
         Dispute dispute = getDisputeById(disputeId);
 
         ConfigurableListDetails newStatus = getStatusByName("status", newStatusName);
@@ -176,6 +181,10 @@ public class DisputeService {
         dispute.setSubStatus(newSubStatus);
         dispute.setComments(comments);
         dispute.setRefund(refund);
+
+        if (vendorVerified != null) {
+            dispute.setVendorVerified(vendorVerified);  // save checkbox value
+        }
 
         // Set reviewedBy = logged-in manager
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -189,7 +198,7 @@ public class DisputeService {
         return disputeRepository.save(dispute);
     }
 
-    //GET DISPUTE STATS FOR USER
+    //GET DISPUTE CREATE & REVIEW STATS FOR EACH USER
     public Map<String, Long> getDisputeStatsForCurrentUser(Long userId) {
         Object result = disputeRepository.getDisputeStatsForUser(userId);
         Object[] counts = (Object[]) result;

@@ -44,7 +44,7 @@ public class DisputeController {
         return disputeService.getDisputeById(id);
     }
 
-    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION & UNREVIEWED
+    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION & PENDING-REVIEW
     @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
@@ -85,7 +85,8 @@ public class DisputeController {
                 request.getStatusName(),
                 request.getSubStatusName(),
                 request.getComments(),
-                request.getRefund()
+                request.getRefund(),
+                request.getVendorVerified()
         );
         return ResponseEntity.ok(updatedDispute);
     }

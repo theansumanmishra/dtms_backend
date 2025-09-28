@@ -7,6 +7,15 @@ public class DisputeStatusUpdateRequest {
     private String subStatusName;
     private String comments;
     private BigDecimal refund;
+    private Boolean vendorVerified;
+
+    public Boolean getVendorVerified() {
+        return vendorVerified;
+    }
+
+    public void setVendorVerified(Boolean vendorVerified) {
+        this.vendorVerified = vendorVerified;
+    }
 
     public BigDecimal getRefund() {
         return refund;

@@ -66,7 +66,8 @@ CREATE TABLE dts_disputes (
     comments VARCHAR(255),
     refund NUMERIC(12,2),
     status INT NOT NULL,
-    sub_status INT NOT NULL
+    sub_status INT NOT NULL,
+    vendor_verified BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE dts_dispute_transactions (
@@ -75,7 +76,7 @@ CREATE TABLE dts_dispute_transactions (
     savings_account_transaction_id INT REFERENCES dts_savings_account_transactions(id) NOT NULL,
     dispute_entry_date DATE NOT NULL DEFAULT CURRENT_DATE,
     disputed_amount NUMERIC(12,2) NOT NULL,
-    status INT ,
+    status INT,
     sub_status INT
 );
 

@@ -55,4 +55,7 @@ public class Dispute {
     @ManyToOne
     @JoinColumn(name = "sub_status")
     private ConfigurableListDetails subStatus;
+
+    @Column(name = "vendor_verified")
+    private boolean vendorVerified;
 }
