@@ -1,10 +1,11 @@
-package com.disputetrackingsystem.security.service;
+package com.disputetrackingsystem.service;
 
 import com.disputetrackingsystem.DTO.AuthResponse;
-import com.disputetrackingsystem.security.model.Role;
-import com.disputetrackingsystem.security.model.User;
-import com.disputetrackingsystem.security.repository.RoleRepository;
-import com.disputetrackingsystem.security.repository.UserRepository;
+import com.disputetrackingsystem.model.Role;
+import com.disputetrackingsystem.model.User;
+import com.disputetrackingsystem.repository.RoleRepository;
+import com.disputetrackingsystem.repository.UserRepository;
+import com.disputetrackingsystem.security.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,10 +13,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -31,6 +40,8 @@ public class UserService {
 
     @Autowired
     private JWTService jwtService;
+
+    private final String uploadDir = "uploads/profile-photos/";
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -114,5 +125,27 @@ public class UserService {
             return new AuthResponse(token, role);
         }
         throw new RuntimeException("Authentication failed");
+    }
+
+    //UPLOAD PIC
+    public String saveProfilePhoto(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Create folder if not exists
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        // Save file
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+        // Update user profile image URL
+        String imageUrl = "/files/" + fileName; // public endpoint
+        user.setProfilePhoto(imageUrl);
+        userRepository.save(user);
+
+        return imageUrl;
     }
 }

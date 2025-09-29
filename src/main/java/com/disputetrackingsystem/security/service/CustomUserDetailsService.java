@@ -1,8 +1,8 @@
 package com.disputetrackingsystem.security.service;
 
-import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.model.User;
 import com.disputetrackingsystem.security.model.UserPrinciple;
-import com.disputetrackingsystem.security.repository.UserRepository;
+import com.disputetrackingsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

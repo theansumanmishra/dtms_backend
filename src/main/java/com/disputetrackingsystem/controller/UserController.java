@@ -1,13 +1,12 @@
-package com.disputetrackingsystem.security.controller;
+package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.DTO.AuthResponse;
 import com.disputetrackingsystem.DTO.UserDTO;
-import com.disputetrackingsystem.security.model.Role;
-import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.model.Role;
+import com.disputetrackingsystem.model.User;
 import com.disputetrackingsystem.security.model.UserPrinciple;
-import com.disputetrackingsystem.security.repository.UserRepository;
-import com.disputetrackingsystem.security.service.CustomUserDetailsService;
-import com.disputetrackingsystem.security.service.UserService;
+import com.disputetrackingsystem.repository.UserRepository;
+import com.disputetrackingsystem.service.UserService;
 import com.disputetrackingsystem.service.DisputeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping
 public class UserController {
 
     @Autowired
@@ -105,6 +103,7 @@ public class UserController {
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
+                user.getProfilePhoto(),
                 user.getUsername(),
                 roles
         );
@@ -117,5 +116,20 @@ public class UserController {
     public ResponseEntity<AuthResponse> login(@RequestBody User user) {
         AuthResponse response = userService.verify(user);
         return ResponseEntity.ok(response);
+    }
+
+    //UPLOAD PIC
+    @PostMapping("users/{userId}/upload-photo")
+    public ResponseEntity<String> uploadProfilePhoto(
+            @PathVariable Long userId,
+            @RequestParam("file") MultipartFile file) {
+
+        try {
+            String imageUrl = userService.saveProfilePhoto(userId, file);
+            return ResponseEntity.ok(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload: " + e.getMessage());
+        }
     }
 }

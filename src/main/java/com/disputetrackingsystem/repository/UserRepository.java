@@ -1,9 +1,7 @@
-package com.disputetrackingsystem.security.repository;
+package com.disputetrackingsystem.repository;
 
-import com.disputetrackingsystem.security.model.User;
+import com.disputetrackingsystem.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

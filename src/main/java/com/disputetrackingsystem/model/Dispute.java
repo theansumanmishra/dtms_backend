@@ -1,6 +1,5 @@
 package com.disputetrackingsystem.model;
 
-import com.disputetrackingsystem.security.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

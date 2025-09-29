@@ -1,5 +1,8 @@
 package com.disputetrackingsystem.security.model;
 
+import com.disputetrackingsystem.model.Permission;
+import com.disputetrackingsystem.model.Role;
+import com.disputetrackingsystem.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

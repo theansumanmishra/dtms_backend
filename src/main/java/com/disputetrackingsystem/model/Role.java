@@ -1,4 +1,4 @@
-package com.disputetrackingsystem.security.model;
+package com.disputetrackingsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
