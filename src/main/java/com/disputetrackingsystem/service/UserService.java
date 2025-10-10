@@ -6,7 +6,9 @@ import com.disputetrackingsystem.model.User;
 import com.disputetrackingsystem.repository.RoleRepository;
 import com.disputetrackingsystem.repository.UserRepository;
 import com.disputetrackingsystem.security.service.JWTService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,10 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -41,14 +41,27 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
+    @Autowired
+    private EmailService emailService;
+
     private final String uploadDir = "uploads/profile-photos/";
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    //REGISTER USERS
+    //REGISTER USERS WITH EMAIL FUNCTIONALITY
     public User Register(User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        // Attach roles properly
+        // 1️⃣ Generate random temp password
+        String tempPassword = RandomStringUtils.randomAlphanumeric(10);
+
+        // 2️⃣ Encode and set
+        user.setPassword(encoder.encode(tempPassword));
+
+        // 3️⃣ Generate reset token
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setTokenExpiry(LocalDateTime.now().plusHours(24));
+
+        // 4️⃣ Attach roles properly
         Set<Role> managedRoles = new HashSet<>();
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             for (Role r : user.getRoles()) {
@@ -58,7 +71,28 @@ public class UserService {
             }
             user.setRoles(managedRoles);
         }
-        return userRepository.save(user);
+
+        // 5️⃣ Save
+        User savedUser = userRepository.save(user);
+
+        // 6️⃣ Send Email
+        String resetLink = "http://localhost:8080/reset-password?token=" + token;
+        String message = """
+                Hi %s,
+                
+                Your account has been created successfully.
+                Temporary password: %s
+                
+                Please reset your password using the link below:
+                %s
+                
+                Your reset link will only be available for 1hr only. 
+                Make sure to change within stipulated time period.
+                """.formatted(user.getName(), tempPassword, resetLink);
+
+        emailService.sendEmail(user.getEmail(), "Reset your password", message);
+
+        return savedUser;
     }
 
     //GET USER BY ID
@@ -68,7 +102,7 @@ public class UserService {
 
     //GET ALL USERS
     public List<User> getUserList() {
-        return userRepository.findAll();
+        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     // UPDATE USER
@@ -98,18 +132,26 @@ public class UserService {
             }
             existingUser.setRoles(managedRoles);
         }
-        // else → keep old roles unchanged
 
+        // Update "enabled" field if provided (admin can disable/enable user)
+        if (userInput.getEnabled() != null) {
+            existingUser.setEnabled(userInput.getEnabled());
+        }
         return userRepository.save(existingUser);
     }
 
-    //AUTHENTICATE USER
+    //AUTHENTICATE USERNAME & PASSWORD
     public AuthResponse verify(User user) {
+
+        // 1️⃣ Authenticate user
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getUsername(),
                         user.getPassword()          //gives me the authentication object if auth is successful
-                ));
+                )
+        );
+
+        // 2️⃣ If authentication is successful, generate token
         if (authentication.isAuthenticated()) {
             // return generated token
             String token = jwtService.generateToken(user.getUsername());
@@ -117,10 +159,10 @@ public class UserService {
             // Extract the first role only, ignore permissions
             String role = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
-                    .filter(auth -> auth.startsWith("ROLE_"))  // only roles
-                    .map(auth -> auth.replace("ROLE_", ""))    // remove ROLE_ prefix
+                    .filter(auth -> auth.startsWith("ROLE_"))                    // only roles
+                    .map(auth -> auth.replace("ROLE_", ""))
                     .findFirst()
-                    .orElse("USER");                           // default fallback
+                    .orElse("USER");                                            // default fallback
 
             return new AuthResponse(token, role);
         }
@@ -148,4 +190,26 @@ public class UserService {
 
         return imageUrl;
     }
+
+    //DELETE PIC
+    public void deleteUserPhoto(Long userId) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Optional: delete file from file system
+        if (user.getProfilePhoto() != null) {
+            String photoPath = "uploads" + user.getProfilePhoto(); // adjust if full path stored
+            File file = new File(photoPath);
+            if (file.exists()) {
+                file.delete(); // deletes file from disk
+            }
+        }
+
+        // Remove reference in DB
+        user.setProfilePhoto(null);
+        userRepository.save(user);
+    }
+
+    //RESET PASSWORD
+
 }

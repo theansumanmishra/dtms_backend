@@ -66,6 +66,14 @@ public class DisputeService {
         SavingsAccountTransaction savingsAccountTransaction = savingsAccountTransactionRepository.findById(savingsAccountTransactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
         dispute.setSavingsAccountTransaction(savingsAccountTransaction);
+
+        // Check if dispute already exists for this transaction
+        boolean exists = disputeRepository.existsBySavingsAccountTransaction(savingsAccountTransaction);
+        if (exists) {
+            throw new IllegalArgumentException(
+                    "A dispute already exists for transaction ID: " + savingsAccountTransactionId
+            );
+        }
         // Set initial status to INITIATED
         ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
         dispute.setStatus(initiatedStatus);
@@ -201,11 +209,11 @@ public class DisputeService {
     //GET DISPUTE CREATE & REVIEW STATS FOR EACH USER
     public Map<String, Long> getDisputeStatsForCurrentUser(Long userId) {
         Object result = disputeRepository.getDisputeStatsForUser(userId);
-        Object[] counts = (Object[]) result;
+        Object[] counts = result != null ? (Object[]) result : new Object[] {0L, 0L};
 
         Map<String, Long> stats = new HashMap<>();
-        stats.put("disputesCreated", ((Number) counts[0]).longValue());
-        stats.put("disputesReviewed", ((Number) counts[1]).longValue());
+        stats.put("disputesCreated", counts[0] != null ? ((Number) counts[0]).longValue() : 0L);
+        stats.put("disputesReviewed", counts[1] != null ? ((Number) counts[1]).longValue() : 0L);
 
         return stats;
     }

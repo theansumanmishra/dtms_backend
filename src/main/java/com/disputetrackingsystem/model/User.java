@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,14 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
+    private Boolean enabled = true;
+
+    // fields for reset password flow
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "token_expiry")
+    private LocalDateTime tokenExpiry;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

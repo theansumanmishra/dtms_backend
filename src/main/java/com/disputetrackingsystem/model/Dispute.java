@@ -10,7 +10,8 @@ import java.sql.Date;
 @Entity
 @Getter
 @Setter
-@Table(name = "dts_disputes")
+@Table(name = "dts_disputes",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "transaction_id")})
 public class Dispute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

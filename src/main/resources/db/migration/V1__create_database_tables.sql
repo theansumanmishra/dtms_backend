@@ -5,8 +5,12 @@ CREATE TABLE dts_users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone BIGINT NOT NULL,
+    profile_photo VARCHAR(255),
     username VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE,
+    reset_token VARCHAR(255),
+    token_expiry TIMESTAMP
 );
 
 CREATE TABLE dts_clients (

@@ -1,6 +1,7 @@
 package com.disputetrackingsystem.repository;
 
 import com.disputetrackingsystem.model.Dispute;
+import com.disputetrackingsystem.model.SavingsAccountTransaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
+
 
     //SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
     Page<Dispute> findByReviewedByIsNull(Pageable pageable);
@@ -41,4 +44,7 @@ public interface DisputeRepository extends JpaRepository<Dispute, Long> {
 
     // Get top 10 recent disputes by createdDate
     List<Dispute> findTop10ByOrderByCreatedDateDesc();
+
+    // Check if dispute already exists for this transaction
+    boolean existsBySavingsAccountTransaction(SavingsAccountTransaction savingsAccountTransaction);
 }

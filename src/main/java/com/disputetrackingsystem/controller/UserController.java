@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,13 @@ public class UserController {
     @PostMapping("/register")
     public User createUser(@RequestBody User user) {
         return userService.Register(user);
+    }
+
+    //LOGIN USER
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody User user) {
+        AuthResponse response = userService.verify(user);
+        return ResponseEntity.ok(response);
     }
 
     //SHOW ALL USER
@@ -105,17 +113,11 @@ public class UserController {
                 user.getPhone(),
                 user.getProfilePhoto(),
                 user.getUsername(),
+                user.getEnabled(),
                 roles
         );
 
         return ResponseEntity.ok(userDto);
-    }
-
-    //LOGIN USER
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody User user) {
-        AuthResponse response = userService.verify(user);
-        return ResponseEntity.ok(response);
     }
 
     //UPLOAD PIC
@@ -132,4 +134,20 @@ public class UserController {
                     .body("Failed to upload: " + e.getMessage());
         }
     }
+
+    //DELETE PIC
+    @DeleteMapping("users/{id}/delete-photo")
+    public ResponseEntity<?> deletePhoto(@PathVariable Long id) {
+        try {
+            userService.deleteUserPhoto(id);
+            return ResponseEntity.ok("Profile photo deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete file");
+        }
+    }
+
+    //RESET PASSWORD LINK
+
 }

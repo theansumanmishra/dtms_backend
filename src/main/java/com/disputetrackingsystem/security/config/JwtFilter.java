@@ -26,9 +26,9 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JWTService jwtService;
 
-    @Override   //if this filter is a success then only the request is passed to the next filter in the chain
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Skip filter for /login
+        // Skip filter for login
         if (request.getServletPath().equals("/login")) {
             filterChain.doFilter(request, response);
             return;
@@ -40,13 +40,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            // Extract username from token
-            // username = jwtService.extractUsername(token);
             username = jwtService.extractUsername(token);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Here, you would typically load user details and set authentication in the context
+            // load user details and set authentication in the context
             UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(username);
 
             if (jwtService.validateToken(token, userDetails)) {
