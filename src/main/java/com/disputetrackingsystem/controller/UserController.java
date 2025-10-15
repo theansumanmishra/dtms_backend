@@ -148,6 +148,11 @@ public class UserController {
         }
     }
 
-    //RESET PASSWORD LINK
-
+    //SENDING RESET PASSWORD LINK
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        userService.sendResetLink(email);
+        return ResponseEntity.ok(Map.of("message", "Password reset link sent successfully"));
+    }
 }

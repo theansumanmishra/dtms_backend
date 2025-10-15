@@ -210,6 +210,43 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //RESET PASSWORD
+    //SENDING RESET PASSWORD LINK
+    public void sendResetLink(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
 
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User with given email does not exist");
+        }
+
+        User user = userOpt.get();
+
+        // Generate reset token and expiry time
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        // Frontend reset link (where user will reset password)
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+
+        // Email message content
+        String message = String.format("""
+                Hi %s,
+                
+                We received a request to reset your password.
+                Click the link below to set a new password:
+                
+                %s
+                
+                This link will expire in 15 minutes.
+                
+                - Dispute Tracking System
+                """, user.getName(), resetLink);
+
+        emailService.sendEmail(
+                user.getEmail(),
+                "Password Reset Request",
+                message
+        );
+    }
 }

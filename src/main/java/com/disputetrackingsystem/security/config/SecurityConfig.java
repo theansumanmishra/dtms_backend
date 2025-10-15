@@ -51,10 +51,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(customizer -> customizer.disable())   //disable csrf token security
+                .csrf(customizer -> customizer.disable())   //disable csrf token for Stateless HTTP
                 .cors(Customizer.withDefaults())                                     //automatically picks up your CorsConfigurationSource bean                     //enable CORS for all origins (for dev only, for prod specify the origins)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login")
+                        .requestMatchers("/login", "/forgot-password")
                         .permitAll()                                                //tells spring no authentication required for any API with endpoint /user
                         .anyRequest().authenticated())                              //tells spring to authenticate every request going through this security chain filter.
                 .httpBasic(Customizer.withDefaults())                               //to see the actual response in th postman for REST API access.
