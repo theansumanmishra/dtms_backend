@@ -24,4 +24,6 @@ public interface SavingsAccountTransactionRepository extends JpaRepository <Savi
     // get transaction by mode (ATM, POS)
     List<SavingsAccountTransaction> findBySavingsAccountIdAndTransactionModeAndIdNot
         (Long savingsAccountId, String transactionMode,Long id);
+
+    List<SavingsAccountTransaction> findBySavingsAccountIdOrderByTransactionDateDesc(Long savingsAccountId);
 }

@@ -44,24 +44,13 @@ public class SavingsAccountTransactionService {
 
     //VIEW ALL SAVINGS ACCOUNT TRANSACTION BY SAVINGS ACCOUNT ID
     public List<SavingsAccountTransaction> findBySavingsAccountId(Long savingsAccountId) {
-        return savingsAccountTransactionRepository.findBySavingsAccountId(savingsAccountId);
+        return savingsAccountTransactionRepository.findBySavingsAccountIdOrderByTransactionDateDesc(savingsAccountId);
     }
 
-//    //TRANSACTIONS BY TNX ID
+    //TRANSACTIONS BY TNX ID
     public SavingsAccountTransaction getTransactionById(Long id){
         return savingsAccountTransactionRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Transaction not found"));
-    }
-
-//    //GET ALL SAVINGS ACCOUNT TRANSACTIONS
-//    public List<SavingsAccountTransaction> getAllTransactions(){
-//        return savingsAccountTransactionRepository.findAll();
-//    }
-
-    //GET LAST 90 DAYS TRANSACTIONS BY SAVINGS ACCOUNT ID
-    public List<SavingsAccountTransaction> getLast90DaysTransactions(Long savingsAccountId) {
-        return savingsAccountTransactionRepository.findAllFromDate(
-                savingsAccountId, LocalDateTime.now().minusDays(90));
     }
 
     //GET TRANSACTIONS BY SAME TXN MODE (ATM or POS)

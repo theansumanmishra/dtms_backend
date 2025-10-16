@@ -32,9 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getServletPath();  // <-- define path
 
-        // Skip filter for login & password reset
+        // Skip filter
         if (path.equals("/login") ||
-                path.equals("/forgot-password")) {
+                path.equals("/reset-link") ||
+                path.equals("/forget-password")||
+                path.equals("/reset-password")){
             filterChain.doFilter(request, response);
             return;
         }

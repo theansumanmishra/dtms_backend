@@ -1,5 +1,5 @@
 INSERT INTO dts_users (name, email, phone, username, password)
 VALUES
-('Ansuman Mishra', 'ansuman123@gmail.com', '8762369145', 'user1','$2a$12$eRm1ymRIIHbAjI4SWW8v3uuYKiuUmMcsGb3CPQ54NzXJ5diIDRetC'),
-('Badass Ravi Kumar', 'jubu123@gmail.com', '7996010808', 'user2','$2a$12$zwwK6yyz90v/J02rWQ/96.u2NX0ui8eDlm26c1VAA02LGGgPyVDXi'),
-('Sourabh Patra', 'sourabh123@gmail.com', '9439465297', 'user3','$2a$12$TyoGXGfM/iYS/XkZqwzs4e6XAFsVfHKDAJ09EQtYJ4X1y9gM3bH4W');
+('Ansuman Mishra', 'ansumanmishra227@gmail.com', '8762369145', 'admin','$2a$12$X.VAicMIWM6f8H8TRiX/Len53YLjEx9i4aOaGEwSeHHqbWQrVYvkq'),
+('Ravi Kumar', 'ravikumar123@gmail.com', '7996010808', 'dispute.agent1','$2a$12$WZyGHEXV0eWRazTLIdUW1eHhzsv2r6XmxybclWbX7WM5ikLsYy5yi'),
+('Sourabh Patra', 'sourabhpatra123@gmail.com', '9439465297', 'dispute.manager1','$2a$12$3R.jpmR7mlenGN2BPC4pdueZKQtSA0E58X9VJa/ADgpa/TdVvgZJi');

@@ -1,6 +1,7 @@
 package com.disputetrackingsystem.service;
 
 import com.disputetrackingsystem.DTO.AuthResponse;
+import com.disputetrackingsystem.DTO.ResetPasswordRequest;
 import com.disputetrackingsystem.model.Role;
 import com.disputetrackingsystem.model.User;
 import com.disputetrackingsystem.repository.RoleRepository;
@@ -48,7 +49,7 @@ public class UserService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    //REGISTER USERS WITH EMAIL FUNCTIONALITY
+    //REGISTER USERS WITH SEND EMAIL FUNCTIONALITY
     public User Register(User user) {
         // 1️⃣ Generate random temp password
         String tempPassword = RandomStringUtils.randomAlphanumeric(10);
@@ -76,21 +77,25 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         // 6️⃣ Send Email
-        String resetLink = "http://localhost:8080/reset-password?token=" + token;
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
         String message = """
-                Hi %s,
+                Hi %s, Welcome to the DTMS Family. 
                 
                 Your account has been created successfully.
                 Temporary password: %s
                 
-                Please reset your password using the link below:
+                Please change your temporary password using the link below:
                 %s
                 
-                Your reset link will only be available for 1hr only. 
-                Make sure to change within stipulated time period.
+                Your reset link will be available for 1hr only. Make sure to change within the stipulated time period.
+                
+                - Dispute Tracking System Team
                 """.formatted(user.getName(), tempPassword, resetLink);
 
-        emailService.sendEmail(user.getEmail(), "Reset your password", message);
+        emailService.sendEmail(
+                user.getEmail(),
+                "DTMS | Welcome to the Family",
+                message);
 
         return savedUser;
     }
@@ -198,7 +203,7 @@ public class UserService {
 
         // Optional: delete file from file system
         if (user.getProfilePhoto() != null) {
-            String photoPath = "uploads" + user.getProfilePhoto(); // adjust if full path stored
+            String photoPath = "uploads" + user.getProfilePhoto();
             File file = new File(photoPath);
             if (file.exists()) {
                 file.delete(); // deletes file from disk
@@ -227,7 +232,7 @@ public class UserService {
         userRepository.save(user);
 
         // Frontend reset link (where user will reset password)
-        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+        String resetLink = "http://localhost:5173/forget-password?token=" + token;
 
         // Email message content
         String message = String.format("""
@@ -240,13 +245,53 @@ public class UserService {
                 
                 This link will expire in 15 minutes.
                 
-                - Dispute Tracking System
+                - Dispute Tracking System Team
                 """, user.getName(), resetLink);
 
         emailService.sendEmail(
                 user.getEmail(),
-                "Password Reset Request",
+                "DTMS | Password Reset Request",
                 message
         );
+    }
+
+    //TEMP PASSWORD CHANGE
+    public void changeTemporaryPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByResetToken(request.getToken())
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        if (user.getTokenExpiry() == null || user.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Reset token expired");
+        }
+
+        if (!encoder.matches(request.getTempPassword(), user.getPassword())) {
+            throw new RuntimeException("Temporary password is incorrect");
+        }
+
+        user.setPassword(encoder.encode(request.getNewPassword()));
+        user.setResetToken(null);
+        user.setTokenExpiry(null);
+        userRepository.save(user);
+    }
+
+    //PASSWORD RESET
+    public boolean resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElse(null);
+
+        if (user == null) {
+            return false;
+        }
+
+        // Check expiry
+        if (user.getTokenExpiry() == null || user.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        user.setPassword(encoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setTokenExpiry(null);
+        userRepository.save(user);
+        return true;
     }
 }

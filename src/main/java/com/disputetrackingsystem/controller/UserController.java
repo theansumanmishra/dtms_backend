@@ -1,6 +1,7 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.DTO.AuthResponse;
+import com.disputetrackingsystem.DTO.ResetPasswordRequest;
 import com.disputetrackingsystem.DTO.UserDTO;
 import com.disputetrackingsystem.model.Role;
 import com.disputetrackingsystem.model.User;
@@ -149,10 +150,30 @@ public class UserController {
     }
 
     //SENDING RESET PASSWORD LINK
-    @PostMapping("/forgot-password")
+    @PostMapping("/reset-link")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         userService.sendResetLink(email);
         return ResponseEntity.ok(Map.of("message", "Password reset link sent successfully"));
+    }
+
+    //TEMP PASSWORD CHANGE
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest request) {
+        userService.changeTemporaryPassword(request);
+        return ResponseEntity.ok("Password changed successfully. You can now log in with your new password.");
+    }
+
+    //FORGET PASSWORD RESET
+    @PostMapping("/forget-password")
+    public ResponseEntity<?> confirmResetPassword(@RequestBody ResetPasswordRequest request) {
+        boolean success = userService.resetPassword(request.getToken(), request.getNewPassword());
+
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+        } else {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Invalid or expired token"));
+        }
     }
 }

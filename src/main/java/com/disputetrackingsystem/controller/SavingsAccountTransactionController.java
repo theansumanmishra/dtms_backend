@@ -24,15 +24,6 @@ public class SavingsAccountTransactionController {
         return savingsAccountTransactionService.createSavingsAccountTransaction(savingsAccountTransaction);
     }
 
-    //GET ALL SAVINGS ACCOUNT TRANSACTIONS 90 DAYS##
-    @GetMapping("/{savingsAccountId}")
-    public List<SavingsAccountTransaction> getTransactions(
-            @PathVariable Long savingsAccountId,
-            @RequestParam(value = "fetchOnlyLast90", required = false, defaultValue = "false") boolean fetchOnlyLast90) {
-
-        return savingsAccountTransactionService.getLast90DaysTransactions(savingsAccountId);
-    }
-
     @GetMapping("/{id}/similar")
     public List<SavingsAccountTransaction> getTransactionsBySameSubType(@PathVariable Long id) {
         return savingsAccountTransactionService.getTransactionsBySameSubType(id);
