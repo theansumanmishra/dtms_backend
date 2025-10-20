@@ -11,6 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -145,33 +146,39 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    //AUTHENTICATE USERNAME & PASSWORD
+    //LOGIN
     public AuthResponse verify(User user) {
+        try {
+            // 1️⃣ Authenticate user
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUsername(),
+                            user.getPassword()          //gives me the authentication object if auth is successful
+                    )
+            );
 
-        // 1️⃣ Authenticate user
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
-                        user.getPassword()          //gives me the authentication object if auth is successful
-                )
-        );
+            // 2️⃣ If authentication is successful, generate token
+            if (authentication.isAuthenticated()) {
+                // return generated token
+                String token = jwtService.generateToken(user.getUsername());
 
-        // 2️⃣ If authentication is successful, generate token
-        if (authentication.isAuthenticated()) {
-            // return generated token
-            String token = jwtService.generateToken(user.getUsername());
+                // Extract the first role only, ignore permissions
+                String role = authentication.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .filter(auth -> auth.startsWith("ROLE_"))                    // only roles
+                        .map(auth -> auth.replace("ROLE_", ""))
+                        .findFirst()
+                        .orElse("USER");                                            // default fallback
 
-            // Extract the first role only, ignore permissions
-            String role = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .filter(auth -> auth.startsWith("ROLE_"))                    // only roles
-                    .map(auth -> auth.replace("ROLE_", ""))
-                    .findFirst()
-                    .orElse("USER");                                            // default fallback
+                return new AuthResponse(token, role);
+            } else {
+                throw new BadCredentialsException("Invalid username or password");
+            }
 
-            return new AuthResponse(token, role);
+        } catch (Exception ex) {
+            // Wrap any authentication failure as BadCredentialsException
+            throw new BadCredentialsException("Invalid username or password");
         }
-        throw new RuntimeException("Authentication failed");
     }
 
     //UPLOAD PIC

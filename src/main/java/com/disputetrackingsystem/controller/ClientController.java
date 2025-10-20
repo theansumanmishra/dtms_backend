@@ -40,7 +40,7 @@ public class ClientController {
     //SHOW ALL CLIENTS
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping
-    public ResponseEntity<Page<Client>> getAllClient(
+    public ResponseEntity<Page<Client>> getAllClients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);

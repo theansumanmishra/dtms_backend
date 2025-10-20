@@ -9,5 +9,4 @@ public interface ConfigurableListDetailsRepository extends JpaRepository<Configu
 
     @Query("SELECT c FROM ConfigurableListDetails c WHERE c.configurableList.name = :listName AND c.name = :detailsName")
     ConfigurableListDetails findByListNameAndDetailsName(@Param("listName") String listName, @Param("detailsName") String detailsName);
-
 }

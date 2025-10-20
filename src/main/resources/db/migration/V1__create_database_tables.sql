@@ -4,7 +4,7 @@ CREATE TABLE dts_users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone BIGINT NOT NULL,
+    phone BIGINT UNIQUE NOT NULL,
     profile_photo VARCHAR(255),
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -76,32 +76,32 @@ CREATE TABLE dts_disputes (
 
 CREATE TABLE dts_configurable_lists (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     description VARCHAR(500)
 );
 
 CREATE TABLE dts_configurable_list_details (
     id SERIAL PRIMARY KEY,
     configurable_list_id INT REFERENCES dts_configurable_lists(id) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     description VARCHAR(500)
 );
 
 CREATE TABLE dts_dispute_reasons(
     id SERIAL PRIMARY KEY,
-    reason VARCHAR(255) NOT NULL,
+    reason VARCHAR(255) UNIQUE NOT NULL,
     reason_description VARCHAR(500)
 );
 
 CREATE TABLE dts_roles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     description VARCHAR(500)
 );
 
 CREATE TABLE dts_permissions (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     description VARCHAR(500)
 );
 

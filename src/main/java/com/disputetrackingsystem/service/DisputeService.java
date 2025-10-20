@@ -1,5 +1,8 @@
 package com.disputetrackingsystem.service;
 
+import com.disputetrackingsystem.eventlistener.DisputeClosedEvent;
+import com.disputetrackingsystem.eventlistener.DisputeCreatedEvent;
+import com.disputetrackingsystem.eventlistener.DisputeDeleteEvent;
 import com.disputetrackingsystem.model.ConfigurableListDetails;
 import com.disputetrackingsystem.model.Dispute;
 import com.disputetrackingsystem.model.SavingsAccountTransaction;
@@ -9,6 +12,7 @@ import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
 import com.disputetrackingsystem.model.User;
 import com.disputetrackingsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,10 +45,14 @@ public class DisputeService {
     @Autowired
     private ConfigurableListDetailsRepository configurableListDetailsRepository;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     //GET STATUS BY NAME & DETAILS
     private ConfigurableListDetails getStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
+
     private ConfigurableListDetails getsubStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
@@ -74,6 +82,7 @@ public class DisputeService {
                     "A dispute already exists for transaction ID: " + savingsAccountTransactionId
             );
         }
+
         // Set initial status to INITIATED
         ConfigurableListDetails initiatedStatus = getStatusByName("status", "INITIATED");
         dispute.setStatus(initiatedStatus);
@@ -81,7 +90,20 @@ public class DisputeService {
         ConfigurableListDetails initiatedSubStatus = getsubStatusByName("sub_status", "PENDING_REVIEW");
         dispute.setSubStatus(initiatedSubStatus);
 
-        return disputeRepository.save(dispute);
+        // Save dispute
+        Dispute savedDispute = disputeRepository.save(dispute);
+
+        // Mark transaction as disputable
+        SavingsAccountTransaction txn = dispute.getSavingsAccountTransaction();
+        if (txn != null) {
+            txn.setDisputable(true);
+            savingsAccountTransactionRepository.save(txn);
+        }
+
+        // Publish the event AFTER save
+        eventPublisher.publishEvent(new DisputeCreatedEvent(this, savedDispute));
+
+        return savedDispute;
     }
 
     //SHOW DISPUTE BY ID
@@ -165,13 +187,26 @@ public class DisputeService {
         return dashboardData;
     }
 
-    //DELETE DISPUTE BY ID
+    // DELETE DISPUTE BY ID
     public void deleteDispute(Long id) {
-        if (!disputeRepository.existsById(id)) {
-            throw new RuntimeException("Dispute not found");
+        // Fetch dispute
+        Dispute dispute = disputeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dispute not found"));
+
+        // Reset transaction disputable flag to false
+        SavingsAccountTransaction txn = dispute.getSavingsAccountTransaction();
+        if (txn != null) {
+            txn.setDisputable(false);
+            savingsAccountTransactionRepository.save(txn);
         }
-        disputeRepository.deleteById(id);
+
+        // Delete dispute
+        disputeRepository.delete(dispute);
+
+        // Publish delete event
+        eventPublisher.publishEvent(new DisputeDeleteEvent(this, dispute));
     }
+
 
     // UPDATE DISPUTE
     public Dispute updateDisputeStatusAndSubStatus(Long disputeId,
@@ -180,11 +215,18 @@ public class DisputeService {
                                                    String comments,
                                                    BigDecimal refund,
                                                    Boolean vendorVerified) {
+        // 1️⃣ Fetch the dispute
         Dispute dispute = getDisputeById(disputeId);
 
+        // 2️⃣ Fetch new status & sub-status using your existing repository method
         ConfigurableListDetails newStatus = getStatusByName("status", newStatusName);
         ConfigurableListDetails newSubStatus = getStatusByName("sub_status", newSubStatusName);
 
+        if (newStatus == null || newSubStatus == null) {
+            throw new RuntimeException("Invalid status or sub-status name provided");
+        }
+
+        // 3️⃣ Update fields
         dispute.setStatus(newStatus);
         dispute.setSubStatus(newSubStatus);
         dispute.setComments(comments);
@@ -194,8 +236,12 @@ public class DisputeService {
             dispute.setVendorVerified(vendorVerified);  // save checkbox value
         }
 
-        // Set reviewedBy = logged-in manager
+        // 4️⃣ Set reviewedBy = logged-in manager
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("No authenticated user found");
+        }
+
         String username = authentication.getName();
 
         User manager = userRepository.findByUsername(username)
@@ -203,13 +249,21 @@ public class DisputeService {
 
         dispute.setReviewedBy(manager);
 
-        return disputeRepository.save(dispute);
+        // 5️⃣ Save updated dispute
+        Dispute savedDispute = disputeRepository.save(dispute);
+
+        // 6️⃣ If dispute is CLOSED, publish email event
+        if ("CLOSED".equalsIgnoreCase(newStatusName)) {
+            eventPublisher.publishEvent(new DisputeClosedEvent(this, savedDispute));
+        }
+
+        return savedDispute;
     }
 
     //GET DISPUTE CREATE & REVIEW STATS FOR EACH USER
     public Map<String, Long> getDisputeStatsForCurrentUser(Long userId) {
         Object result = disputeRepository.getDisputeStatsForUser(userId);
-        Object[] counts = result != null ? (Object[]) result : new Object[] {0L, 0L};
+        Object[] counts = result != null ? (Object[]) result : new Object[]{0L, 0L};
 
         Map<String, Long> stats = new HashMap<>();
         stats.put("disputesCreated", counts[0] != null ? ((Number) counts[0]).longValue() : 0L);

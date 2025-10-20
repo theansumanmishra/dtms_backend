@@ -32,7 +32,7 @@ public class DebitCardController {
 
     //GET DEBIT CARD BY ID ##
     @GetMapping("/{id}")
-    public DebitCard getDebitById(@PathVariable Long id) {
+    public DebitCard getDebitCardById(@PathVariable Long id) {
         return debitCardService.getDebitById(id);
     }
 
