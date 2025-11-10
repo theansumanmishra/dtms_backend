@@ -47,7 +47,7 @@ public class DisputeEventListener {
 
     @Async
     @EventListener
-    public void handleDisputeClosed(DisputeClosedEvent event) {
+    public void handleDisputeStatusChanged(DisputeStatusChangedEvent event) {
         Dispute dispute = event.getDispute();
         // Assuming the client is linked via dispute.getSavingsAccountTransaction().getSavingsAccount().getClient()
         Client client = dispute.getSavingsAccountTransaction()
@@ -59,7 +59,7 @@ public class DisputeEventListener {
             String text = String.format("""
                 Dear %s,
 
-                Your dispute (ID: DSP202500%d) has been reviewed and closed by our team.
+                Your dispute (ID: DSP202500%d) has been reviewed by our team.
 
                 Status: %s
                 Sub-Status: %s
@@ -82,7 +82,7 @@ public class DisputeEventListener {
 
     @Async
     @EventListener
-    public void handleDisputeClosed(DisputeDeleteEvent event) {
+    public void handleDisputeDelete(DisputeDeleteEvent event) {
         Dispute dispute = event.getDispute();
         // Assuming the client is linked via dispute.getSavingsAccountTransaction().getSavingsAccount().getClient()
         Client client = dispute.getSavingsAccountTransaction()

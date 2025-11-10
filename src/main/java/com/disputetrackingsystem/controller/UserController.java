@@ -157,7 +157,7 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password reset link sent successfully"));
     }
 
-    //TEMP PASSWORD CHANGE
+    //RESET PASSWORD
     @PostMapping("/reset-password")
     public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest request) {
         userService.changeTemporaryPassword(request);

@@ -5,11 +5,11 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class DisputeClosedEvent extends ApplicationEvent {
+public class DisputeStatusChangedEvent extends ApplicationEvent {
 
     private final Dispute dispute;
 
-    public DisputeClosedEvent(Object source, Dispute dispute) {
+    public DisputeStatusChangedEvent(Object source, Dispute dispute) {
         super(source);
         this.dispute = dispute;
     }

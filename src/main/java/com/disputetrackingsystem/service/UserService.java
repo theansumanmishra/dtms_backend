@@ -235,7 +235,7 @@ public class UserService {
         // Generate reset token and expiry time
         String token = UUID.randomUUID().toString();
         user.setResetToken(token);
-        user.setTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        user.setTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
         // Frontend reset link (where user will reset password)

@@ -4,7 +4,7 @@ CREATE TABLE dts_users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone BIGINT UNIQUE NOT NULL,
+    phone VARCHAR(15) UNIQUE NOT NULL,
     profile_photo VARCHAR(255),
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE dts_users (
 CREATE TABLE dts_clients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) UNIQUE NOT NULL,
+    phone VARCHAR(15) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE dts_disputes (
     reason VARCHAR(255),
     description VARCHAR(255),
     created_date DATE NOT NULL,
-    created_by BIGINT NOT NULL REFERENCES dts_users(id),
-    reviewed_by BIGINT REFERENCES dts_users(id),
+    created_by INT NOT NULL REFERENCES dts_users(id),
+    reviewed_by INT REFERENCES dts_users(id),
     comments VARCHAR(255),
     refund NUMERIC(12,2),
     status INT NOT NULL,

@@ -1,6 +1,6 @@
 package com.disputetrackingsystem.service;
 
-import com.disputetrackingsystem.eventlistener.DisputeClosedEvent;
+import com.disputetrackingsystem.eventlistener.DisputeStatusChangedEvent;
 import com.disputetrackingsystem.eventlistener.DisputeCreatedEvent;
 import com.disputetrackingsystem.eventlistener.DisputeDeleteEvent;
 import com.disputetrackingsystem.model.ConfigurableListDetails;
@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -151,34 +152,28 @@ public class DisputeService {
 
         // TIME BASED COUNT
         Map<String, Long> timeCounts = new HashMap<>();
-
         LocalDate today = LocalDate.now();
-        LocalDateTime startOfToday = today.atStartOfDay();
         LocalDateTime now = LocalDateTime.now();
 
-        // convert LocalDateTime → java.util.Date
-        Date startOfTodayDate = Date.from(startOfToday.atZone(ZoneId.systemDefault()).toInstant());
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate startOfMonth = today.withDayOfMonth(1);
+        LocalDate startOfYear = today.withDayOfYear(1);
+
         Date nowDate = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
-        // Today
-        timeCounts.put("Today", disputeRepository.countByCreatedDateBetween(startOfTodayDate, nowDate));
+        timeCounts.put("Today", disputeRepository.countByCreatedDateBetween(
+                Date.from(startOfToday.atZone(ZoneId.systemDefault()).toInstant()), nowDate));
 
-        // This Week
-        timeCounts.put("This Week", disputeRepository.countByCreatedDateAfter(
-                Date.from(today.minusWeeks(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
-        ));
+        timeCounts.put("This Week", disputeRepository.countByCreatedDateBetween(
+                Date.from(startOfWeek.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), nowDate));
 
-        // This Month
-        timeCounts.put("This Month", disputeRepository.countByCreatedDateAfter(
-                Date.from(today.minusMonths(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
-        ));
+        timeCounts.put("This Month", disputeRepository.countByCreatedDateBetween(
+                Date.from(startOfMonth.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), nowDate));
 
-        // This Year
-        timeCounts.put("This Year", disputeRepository.countByCreatedDateAfter(
-                Date.from(today.minusYears(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
-        ));
+        timeCounts.put("This Year", disputeRepository.countByCreatedDateBetween(
+                Date.from(startOfYear.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), nowDate));
 
-        // Total
         timeCounts.put("Total", disputeRepository.count());
 
         dashboardData.put("subStatusCounts", subStatusCounts);
@@ -206,7 +201,6 @@ public class DisputeService {
         // Publish delete event
         eventPublisher.publishEvent(new DisputeDeleteEvent(this, dispute));
     }
-
 
     // UPDATE DISPUTE
     public Dispute updateDisputeStatusAndSubStatus(Long disputeId,
@@ -253,9 +247,7 @@ public class DisputeService {
         Dispute savedDispute = disputeRepository.save(dispute);
 
         // 6️⃣ If dispute is CLOSED, publish email event
-        if ("CLOSED".equalsIgnoreCase(newStatusName)) {
-            eventPublisher.publishEvent(new DisputeClosedEvent(this, savedDispute));
-        }
+        eventPublisher.publishEvent(new DisputeStatusChangedEvent(this, savedDispute));
 
         return savedDispute;
     }
