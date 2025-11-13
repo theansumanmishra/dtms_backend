@@ -1,0 +1,9 @@
+.git
+.gitignore
+target
+build
+node_modules
+.gradle
+.mvn/wrapper/*/maven-wrapper.jar
+**/.DS_Store
+.env
