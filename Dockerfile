@@ -13,7 +13,7 @@ WORKDIR /app
 
 # Copy the built jar (first jar in target/)
 ARG JAR_FILE=target/*.jar
-COPY --from=build ${JAR_FILE} app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Tune JVM for containers
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
