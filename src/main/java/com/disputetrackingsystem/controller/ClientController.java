@@ -1,7 +1,6 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.model.Client;
-import com.disputetrackingsystem.repository.ClientRepository;
 import com.disputetrackingsystem.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,24 +20,21 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @Autowired
-    private ClientRepository clientRepository;
-
-    //CREATE CLIENT
+    // CREATE CLIENT
     @PreAuthorize("hasAuthority('CREATE_CLIENT')")
     @PostMapping
     public Client createClient(@RequestBody Client client) {
         return clientService.saveClient(client);
     }
 
-    //SHOW CLIENT BY ID
+    // SHOW CLIENT BY ID
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping("{id}")
     public Client getClient(@PathVariable Long id) {
         return clientService.getClientById(id);
     }
 
-    //SHOW ALL CLIENTS
+    // SHOW ALL CLIENTS
     @PreAuthorize("hasAuthority('VIEW_CLIENT')")
     @GetMapping
     public ResponseEntity<Page<Client>> getAllClients(
@@ -49,14 +45,14 @@ public class ClientController {
         return ResponseEntity.ok(clients);
     }
 
-    //UPDATE CLIENTS
+    // UPDATE CLIENTS
     @PreAuthorize("hasAuthority('UPDATE_CLIENT')")
     @PutMapping
     public Client updateClient(@RequestBody Client client) {
         return clientService.saveClient(client);
     }
 
-    //DELETE CLIENT
+    // DELETE CLIENT
     @PreAuthorize("hasAuthority('MANAGE_CLIENT')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteClient(Long id) {

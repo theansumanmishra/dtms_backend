@@ -4,7 +4,6 @@ import com.disputetrackingsystem.model.DebitCard;
 import com.disputetrackingsystem.model.Dispute;
 import com.disputetrackingsystem.model.SavingsAccount;
 import com.disputetrackingsystem.model.SavingsAccountTransaction;
-import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import com.disputetrackingsystem.service.DebitCardService;
 import com.disputetrackingsystem.service.DisputeService;
 import com.disputetrackingsystem.service.SavingsAccountService;
@@ -23,9 +22,6 @@ public class SavingsAccountController {
     private SavingsAccountService savingsAccountService;
 
     @Autowired
-    private SavingsAccountRepository savingsAccountRepository;
-
-    @Autowired
     private DebitCardService debitCardService;
 
     @Autowired
@@ -34,48 +30,48 @@ public class SavingsAccountController {
     @Autowired
     private DisputeService disputeService;
 
-    //CREATE SAVINGS ACCOUNT ##
+    // CREATE SAVINGS ACCOUNT ##
     @PostMapping
     public SavingsAccount postSavingsAccount(@RequestBody SavingsAccount savingsAccount) {
         return savingsAccountService.createSavingsAccount(savingsAccount);
     }
 
-    //SHOW ALL SAVINGS ACCOUNT ##
+    // SHOW ALL SAVINGS ACCOUNT ##
     @GetMapping
     public List<SavingsAccount> getAllSavingsAccount() {
         return savingsAccountService.showAllSavingsAccount();
     }
 
-    //SHOW SAVINGS ACCOUNT BY ID ##
+    // SHOW SAVINGS ACCOUNT BY ID ##
     @GetMapping("/{id}")
-    public SavingsAccount getAccountById(@PathVariable Long id){
+    public SavingsAccount getAccountById(@PathVariable Long id) {
         return savingsAccountService.getAccountById(id);
     }
 
     // ************* SAVINGS_ACCOUNT TRANSACTIONS ******************//
 
-    //VIEW TRANSACTION BY SAVINGS-ACCOUNT ID
+    // VIEW TRANSACTION BY SAVINGS-ACCOUNT ID
     @GetMapping("/{savingsAccountId}/transactions")
-    public List<SavingsAccountTransaction> getAllSavingsAccountTransaction(@PathVariable Long savingsAccountId){
+    public List<SavingsAccountTransaction> getAllSavingsAccountTransaction(@PathVariable Long savingsAccountId) {
         return savingsAccountTransactionService.findBySavingsAccountId(savingsAccountId);
     }
 
-    //SHOW EACH TRANSACTION BY ID
+    // SHOW EACH TRANSACTION BY ID
     @GetMapping("/{savingsaccountId}/transactions/{transactionId}")
-    public SavingsAccountTransaction getTransactionById(@PathVariable Long transactionId){
+    public SavingsAccountTransaction getTransactionById(@PathVariable Long transactionId) {
         return savingsAccountTransactionService.getTransactionById(transactionId);
     }
 
-    //CREATE DISPUTE
+    // CREATE DISPUTE
     @PreAuthorize("hasAuthority('CREATE_DISPUTE')")
     @PostMapping("/{savingsaccountId}/transactions/{transactionId}/createDispute")
     public Dispute createDispute(@RequestBody Dispute dispute) {
         return disputeService.createDispute(dispute);
     }
 
-    //VIEW DEBIT-CARDS BY SAVINGS-ACCOUNT ID
+    // VIEW DEBIT-CARDS BY SAVINGS-ACCOUNT ID
     @GetMapping("{savingsAccountId}/debitcards")
-    public List<DebitCard> getAllDebitCards(@PathVariable Long savingsAccountId){
+    public List<DebitCard> getAllDebitCards(@PathVariable Long savingsAccountId) {
         return debitCardService.findBySavingsAccountId(savingsAccountId);
     }
 }

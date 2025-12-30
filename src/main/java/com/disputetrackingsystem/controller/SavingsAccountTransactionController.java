@@ -1,7 +1,6 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.model.SavingsAccountTransaction;
-import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
 import com.disputetrackingsystem.service.SavingsAccountTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +12,12 @@ import java.util.List;
 public class SavingsAccountTransactionController {
 
     @Autowired
-    private SavingsAccountTransactionRepository savingsAccountTransactionRepository;
-
-    @Autowired
     private SavingsAccountTransactionService savingsAccountTransactionService;
 
-    //CREATE SAVINGS ACCOUNT TRANSACTION ##
+    // CREATE SAVINGS ACCOUNT TRANSACTION ##
     @PostMapping
-    public SavingsAccountTransaction postSavingsAccountTransaction(@RequestBody SavingsAccountTransaction savingsAccountTransaction){
+    public SavingsAccountTransaction postSavingsAccountTransaction(
+            @RequestBody SavingsAccountTransaction savingsAccountTransaction) {
         return savingsAccountTransactionService.createSavingsAccountTransaction(savingsAccountTransaction);
     }
 
@@ -29,4 +26,3 @@ public class SavingsAccountTransactionController {
         return savingsAccountTransactionService.getTransactionsBySameSubType(id);
     }
 }
-

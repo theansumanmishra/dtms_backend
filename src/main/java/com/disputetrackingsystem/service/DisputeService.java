@@ -20,7 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.lang.NonNull;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -49,7 +49,7 @@ public class DisputeService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    //GET STATUS BY NAME & DETAILS
+    // GET STATUS BY NAME & DETAILS
     private ConfigurableListDetails getStatusByName(String listName, String detailsName) {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
@@ -58,7 +58,7 @@ public class DisputeService {
         return configurableListDetailsRepository.findByListNameAndDetailsName(listName, detailsName);
     }
 
-    //RAISE DISPUTE
+    // RAISE DISPUTE
     public Dispute createDispute(Dispute dispute) {
         // Get logged-in user from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -69,10 +69,11 @@ public class DisputeService {
 
         // Set createdBy automatically
         dispute.setCreatedBy(user);
-        //Fetch TXN-Id
+        // Fetch TXN-Id
         Long savingsAccountTransactionId = dispute.getSavingsAccountTransaction().getId();
         // Link TXN-Id
-        SavingsAccountTransaction savingsAccountTransaction = savingsAccountTransactionRepository.findById(savingsAccountTransactionId)
+        SavingsAccountTransaction savingsAccountTransaction = savingsAccountTransactionRepository
+                .findById(savingsAccountTransactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
         dispute.setSavingsAccountTransaction(savingsAccountTransaction);
 
@@ -80,8 +81,7 @@ public class DisputeService {
         boolean exists = disputeRepository.existsBySavingsAccountTransaction(savingsAccountTransaction);
         if (exists) {
             throw new IllegalArgumentException(
-                    "A dispute already exists for transaction ID: " + savingsAccountTransactionId
-            );
+                    "A dispute already exists for transaction ID: " + savingsAccountTransactionId);
         }
 
         // Set initial status to INITIATED
@@ -107,19 +107,18 @@ public class DisputeService {
         return savedDispute;
     }
 
-    //SHOW DISPUTE BY ID
-    public Dispute getDisputeById(Long id) {
+    // SHOW DISPUTE BY ID
+    public Dispute getDisputeById(@NonNull Long id) {
         return disputeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispute not found"));
     }
 
-    //SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
+    // SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
     public Page<Dispute> showAllDispute(Pageable pageable, String filter) {
         PageRequest pageRequest = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                Sort.by("createdDate").descending()
-        );
+                Sort.by("createdDate").descending());
 
         if ("pending-review".equalsIgnoreCase(filter)) {
             return disputeRepository.findByReviewedByIsNull(pageRequest);
@@ -132,13 +131,13 @@ public class DisputeService {
         }
     }
 
-    //SHOW DISPUTES BY ACCOUNT NUMBER
+    // SHOW DISPUTES BY ACCOUNT NUMBER
     public Page<Dispute> getDisputesByAccountNumber(long accountNumber, Pageable pageable) {
         return disputeRepository
                 .findBySavingsAccountTransaction_SavingsAccount_AccountNumber(accountNumber, pageable);
     }
 
-    //SHOW DISPUTE DASHBOARD
+    // SHOW DISPUTE DASHBOARD
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> dashboardData = new HashMap<>();
 
@@ -148,7 +147,8 @@ public class DisputeService {
         subStatusCounts.put("Under Review", disputeRepository.countBySubStatus_NameIgnoreCase("UNDER_REVIEW"));
         subStatusCounts.put("Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("ACCEPTED"));
         subStatusCounts.put("Rejected", disputeRepository.countBySubStatus_NameIgnoreCase("REJECTED"));
-        subStatusCounts.put("Partially Accepted", disputeRepository.countBySubStatus_NameIgnoreCase("PARTIALLY_ACCEPTED"));
+        subStatusCounts.put("Partially Accepted",
+                disputeRepository.countBySubStatus_NameIgnoreCase("PARTIALLY_ACCEPTED"));
 
         // TIME BASED COUNT
         Map<String, Long> timeCounts = new HashMap<>();
@@ -183,7 +183,7 @@ public class DisputeService {
     }
 
     // DELETE DISPUTE BY ID
-    public void deleteDispute(Long id) {
+    public void deleteDispute(@NonNull Long id) {
         // Fetch dispute
         Dispute dispute = disputeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispute not found"));
@@ -203,12 +203,12 @@ public class DisputeService {
     }
 
     // UPDATE DISPUTE
-    public Dispute updateDisputeStatusAndSubStatus(Long disputeId,
-                                                   String newStatusName,
-                                                   String newSubStatusName,
-                                                   String comments,
-                                                   BigDecimal refund,
-                                                   Boolean vendorVerified) {
+    public Dispute updateDisputeStatusAndSubStatus(@NonNull Long disputeId,
+            String newStatusName,
+            String newSubStatusName,
+            String comments,
+            BigDecimal refund,
+            Boolean vendorVerified) {
         // 1️⃣ Fetch the dispute
         Dispute dispute = getDisputeById(disputeId);
 
@@ -227,7 +227,7 @@ public class DisputeService {
         dispute.setRefund(refund);
 
         if (vendorVerified != null) {
-            dispute.setVendorVerified(vendorVerified);  // save checkbox value
+            dispute.setVendorVerified(vendorVerified); // save checkbox value
         }
 
         // 4️⃣ Set reviewedBy = logged-in manager
@@ -252,10 +252,10 @@ public class DisputeService {
         return savedDispute;
     }
 
-    //GET DISPUTE CREATE & REVIEW STATS FOR EACH USER
+    // GET DISPUTE CREATE & REVIEW STATS FOR EACH USER
     public Map<String, Long> getDisputeStatsForCurrentUser(Long userId) {
         Object result = disputeRepository.getDisputeStatsForUser(userId);
-        Object[] counts = result != null ? (Object[]) result : new Object[]{0L, 0L};
+        Object[] counts = result != null ? (Object[]) result : new Object[] { 0L, 0L };
 
         Map<String, Long> stats = new HashMap<>();
         stats.put("disputesCreated", counts[0] != null ? ((Number) counts[0]).longValue() : 0L);
@@ -264,7 +264,7 @@ public class DisputeService {
         return stats;
     }
 
-    //GET RECENT DISPUTES
+    // GET RECENT DISPUTES
     public List<Dispute> getRecentDisputes() {
         return disputeRepository.findTop10ByOrderByCreatedDateDesc();
     }

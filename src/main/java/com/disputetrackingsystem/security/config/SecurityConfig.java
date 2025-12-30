@@ -33,36 +33,38 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    //AUTHENTICATION
-    //Bean to change the AuthenticationProvider itself or customize it
+    // AUTHENTICATION
+    // Bean to change the AuthenticationProvider itself or customize it
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();   //to fetch data from DB
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
 
-        provider.setUserDetailsService(customUserDetailsService);               //fetches the User entity from DB
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));     //to store hash my pwd & store in DB
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12)); // to store hash my pwd & store in DB
 
         return provider;
     }
 
-    //AUTHORIZATION
-    //Bean to change the default security filter chain provided by spring security
-    // and for this to work we need to create a custom class that implements UserDetailsService
+    // AUTHORIZATION
+    // Bean to change the default security filter chain provided by spring security
+    // and for this to work we need to create a custom class that implements
+    // UserDetailsService
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(customizer -> customizer.disable())   //disable csrf token for Stateless HTTP
-                .cors(Customizer.withDefaults())                                     //automatically picks up your CorsConfigurationSource bean                     //enable CORS for all origins (for dev only, for prod specify the origins)
+                .csrf(customizer -> customizer.disable()) // disable csrf token for Stateless HTTP
+                .cors(Customizer.withDefaults()) // automatically picks up your CorsConfigurationSource bean & enable
+                                                 // CORS for all origins (for dev only, for prod specify the origins)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/login",
                                 "/forget-password",
                                 "/reset-link",
                                 "/reset-password")
-                        .permitAll()                                                //tells spring no authentication required for any API with endpoint /user
-                        .anyRequest().authenticated())                              //tells spring to authenticate every request going through this security chain filter.
-                .httpBasic(Customizer.withDefaults())                               //to see the actual response in th postman for REST API access.
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))    //tells spring security to keep my http stateless.
+                        .permitAll() // tells spring no authentication required for any API with endpoint /user
+                        .anyRequest().authenticated()) // tells spring to authenticate every request going through this
+                                                       // security chain filter.
+                .httpBasic(Customizer.withDefaults()) // to see the actual response in th postman for REST API access.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();                                                           //its job is to return the object of security filter chain
+                .build(); // its job is to return the object of security filter chain
     }
 }

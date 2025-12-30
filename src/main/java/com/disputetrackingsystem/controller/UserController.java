@@ -37,27 +37,27 @@ public class UserController {
     @Autowired
     private DisputeService disputeService;
 
-    //CREATE USER
+    // CREATE USER
     @PostMapping("/register")
     public User createUser(@RequestBody User user) {
         return userService.Register(user);
     }
 
-    //LOGIN USER
+    // LOGIN USER
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody User user) {
         AuthResponse response = userService.verify(user);
         return ResponseEntity.ok(response);
     }
 
-    //SHOW ALL USER
-    @PreAuthorize("hasAuthority('VIEW_USER')")  //only user with CREATE_USER authority can create new user
+    // SHOW ALL USER
+    @PreAuthorize("hasAuthority('VIEW_USER')") // only user with CREATE_USER authority can create new user
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getUserList();
     }
 
-    //GET DISPUTE STATS FOR USER
+    // GET DISPUTE STATS FOR USER
     @GetMapping("/my-stats")
     public ResponseEntity<Map<String, Long>> getMyDisputeStats() {
         UserPrinciple currentUser = (UserPrinciple) SecurityContextHolder
@@ -71,17 +71,17 @@ public class UserController {
         return ResponseEntity.ok(stats);
     }
 
-    //UPDATE USER
+    // UPDATE USER
     @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PutMapping("/users/{id}")
     public User updateUser(@RequestBody User user, @PathVariable Long id) {
         return userService.updateUser(id, user);
     }
 
-    //DELETE USER
+    // DELETE USER
     @PreAuthorize("hasAuthority('MANAGE_USER')")
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable long id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found");
         }
@@ -89,7 +89,7 @@ public class UserController {
         return "User deleted successfully";
     }
 
-    //GET INDIVIDUAL USER
+    // GET INDIVIDUAL USER
     @GetMapping("users/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -115,13 +115,12 @@ public class UserController {
                 user.getProfilePhoto(),
                 user.getUsername(),
                 user.getEnabled(),
-                roles
-        );
+                roles);
 
         return ResponseEntity.ok(userDto);
     }
 
-    //UPLOAD PIC
+    // UPLOAD PIC
     @PostMapping("users/{userId}/upload-photo")
     public ResponseEntity<String> uploadProfilePhoto(
             @PathVariable Long userId,
@@ -136,7 +135,7 @@ public class UserController {
         }
     }
 
-    //DELETE PIC
+    // DELETE PIC
     @DeleteMapping("users/{id}/delete-photo")
     public ResponseEntity<?> deletePhoto(@PathVariable Long id) {
         try {
@@ -149,7 +148,7 @@ public class UserController {
         }
     }
 
-    //SENDING RESET PASSWORD LINK
+    // SENDING RESET PASSWORD LINK
     @PostMapping("/reset-link")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
@@ -157,14 +156,14 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password reset link sent successfully"));
     }
 
-    //RESET PASSWORD
+    // RESET PASSWORD
     @PostMapping("/reset-password")
     public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest request) {
         userService.changeTemporaryPassword(request);
         return ResponseEntity.ok("Password changed successfully. You can now log in with your new password.");
     }
 
-    //FORGET PASSWORD RESET
+    // FORGET PASSWORD RESET
     @PostMapping("/forget-password")
     public ResponseEntity<?> confirmResetPassword(@RequestBody ResetPasswordRequest request) {
         boolean success = userService.resetPassword(request.getToken(), request.getNewPassword());

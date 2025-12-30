@@ -8,8 +8,6 @@ import com.disputetrackingsystem.repository.SavingsAccountRepository;
 import com.disputetrackingsystem.repository.SavingsAccountTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,16 +22,17 @@ public class SavingsAccountTransactionService {
     @Autowired
     private DebitCardRepository debitCardRepository;
 
-    //CREATE A SAVINGS ACCOUNT TRANSACTION
-    public SavingsAccountTransaction createSavingsAccountTransaction(SavingsAccountTransaction savingsAccountTransaction){
+    // CREATE A SAVINGS ACCOUNT TRANSACTION
+    public SavingsAccountTransaction createSavingsAccountTransaction(
+            SavingsAccountTransaction savingsAccountTransaction) {
 
-        //FETCH SAVINGS ACCOUNT ID
+        // FETCH SAVINGS ACCOUNT ID
         Long savingsAccountId = savingsAccountTransaction.getSavingsAccount().getId();
         SavingsAccount savingsAccount = savingsAccountRepository.findById(savingsAccountId)
                 .orElseThrow(() -> new RuntimeException("Savings Account not found"));
         savingsAccountTransaction.setSavingsAccount(savingsAccount);
 
-        //FETCH DEBIT CARD ID
+        // FETCH DEBIT CARD ID
         Long debitCardId = savingsAccountTransaction.getDebitCard().getId();
         DebitCard debitCard = debitCardRepository.findById(debitCardId)
                 .orElseThrow(() -> new RuntimeException("Debit card not found"));
@@ -42,18 +41,18 @@ public class SavingsAccountTransactionService {
         return savingsAccountTransactionRepository.save(savingsAccountTransaction);
     }
 
-    //VIEW ALL SAVINGS ACCOUNT TRANSACTION BY SAVINGS ACCOUNT ID
+    // VIEW ALL SAVINGS ACCOUNT TRANSACTION BY SAVINGS ACCOUNT ID
     public List<SavingsAccountTransaction> findBySavingsAccountId(Long savingsAccountId) {
         return savingsAccountTransactionRepository.findBySavingsAccountIdOrderByTransactionDateDesc(savingsAccountId);
     }
 
-    //TRANSACTIONS BY TNX ID
-    public SavingsAccountTransaction getTransactionById(Long id){
+    // TRANSACTIONS BY TNX ID
+    public SavingsAccountTransaction getTransactionById(Long id) {
         return savingsAccountTransactionRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
     }
 
-    //GET TRANSACTIONS BY SAME TXN MODE (ATM or POS)
+    // GET TRANSACTIONS BY SAME TXN MODE (ATM or POS)
     public List<SavingsAccountTransaction> getTransactionsBySameSubType(Long id) {
         // Step 1: Find the clicked transaction
         SavingsAccountTransaction clickedTransaction = savingsAccountTransactionRepository.findById(id)
@@ -64,6 +63,7 @@ public class SavingsAccountTransactionService {
         Long savingsAccountId = clickedTransaction.getSavingsAccount().getId();
 
         // Step 3: Fetch all with same mode
-        return savingsAccountTransactionRepository.findBySavingsAccountIdAndTransactionModeAndIdNot(savingsAccountId, mode, id);
+        return savingsAccountTransactionRepository.findBySavingsAccountIdAndTransactionModeAndIdNot(savingsAccountId,
+                mode, id);
     }
 }

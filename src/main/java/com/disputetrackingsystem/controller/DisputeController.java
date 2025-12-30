@@ -3,7 +3,6 @@ package com.disputetrackingsystem.controller;
 import com.disputetrackingsystem.DTO.DisputeStatusUpdateRequest;
 import com.disputetrackingsystem.model.Dispute;
 import com.disputetrackingsystem.model.Reason;
-import com.disputetrackingsystem.repository.DisputeRepository;
 import com.disputetrackingsystem.service.DisputeService;
 import com.disputetrackingsystem.service.ReasonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +24,24 @@ public class DisputeController {
     private DisputeService disputeService;
 
     @Autowired
-    private DisputeRepository disputeRepository;
-
-    @Autowired
     private ReasonService reasonService;
 
-    //RAISE DISPUTE
+    // RAISE DISPUTE
     @PreAuthorize("hasAuthority('CREATE_DISPUTE')")
     @PostMapping
     public Dispute createDispute(@RequestBody Dispute dispute) {
         return disputeService.createDispute(dispute);
     }
 
-    //VIEW DISPUTE BY ID
+    // VIEW DISPUTE BY ID
     @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping("/{id}")
     public Dispute getEachDispute(@PathVariable long id) {
         return disputeService.getDisputeById(id);
     }
 
-    //GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION & PENDING-REVIEW
+    // GET ALL DISPUTES WITH SORTED BY disputeCreatedDate & PAGINATION &
+    // PENDING-REVIEW
     @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping
     public ResponseEntity<Page<Dispute>> getAllDisputes(
@@ -57,13 +54,12 @@ public class DisputeController {
         return ResponseEntity.ok(disputes);
     }
 
-    //GET DISPUTES BY ACCOUNT NUMBER
+    // GET DISPUTES BY ACCOUNT NUMBER
     @PreAuthorize("hasAuthority('VIEW_DISPUTE')")
     @GetMapping("/search")
     public ResponseEntity<Page<Dispute>> getDisputesByAccountNumber(
             @RequestParam long accountNumber,
-            Pageable pageable
-    ) {
+            Pageable pageable) {
         Page<Dispute> disputes = disputeService.getDisputesByAccountNumber(accountNumber, pageable);
         return ResponseEntity.ok(disputes);
     }
@@ -86,8 +82,7 @@ public class DisputeController {
                 request.getSubStatusName(),
                 request.getComments(),
                 request.getRefund(),
-                request.getVendorVerified()
-        );
+                request.getVendorVerified());
         return ResponseEntity.ok(updatedDispute);
     }
 

@@ -18,7 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.security.SecureRandom;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,10 +50,10 @@ public class UserService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    //REGISTER USERS WITH SEND EMAIL FUNCTIONALITY
+    // REGISTER USERS WITH SEND EMAIL FUNCTIONALITY
     public User Register(User user) {
         // 1️⃣ Generate random temp password
-        String tempPassword = RandomStringUtils.randomAlphanumeric(10);
+        String tempPassword = RandomStringUtils.random(12, 0, 0, true, true, null, new SecureRandom());
 
         // 2️⃣ Encode and set
         user.setPassword(encoder.encode(tempPassword));
@@ -80,16 +80,16 @@ public class UserService {
         // 6️⃣ Send Email
         String resetLink = "http://localhost:5173/reset-password?token=" + token;
         String message = """
-                Hi %s, Welcome to the DTMS Family. 
-                
+                Hi %s, Welcome to the DTMS Family.
+
                 Your account has been created successfully.
                 Temporary password: %s
-                
+
                 Please change your temporary password using the link below:
                 %s
-                
+
                 Your reset link will be available for 1hr only. Make sure to change within the stipulated time period.
-                
+
                 - Dispute Tracking System Team
                 """.formatted(user.getName(), tempPassword, resetLink);
 
@@ -101,12 +101,12 @@ public class UserService {
         return savedUser;
     }
 
-    //GET USER BY ID
+    // GET USER BY ID
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow();
     }
 
-    //GET ALL USERS
+    // GET ALL USERS
     public List<User> getUserList() {
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
@@ -146,16 +146,15 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    //LOGIN
+    // LOGIN
     public AuthResponse verify(User user) {
         try {
             // 1️⃣ Authenticate user
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(),
-                            user.getPassword()          //gives me the authentication object if auth is successful
-                    )
-            );
+                            user.getPassword() // gives me the authentication object if auth is successful
+                    ));
 
             // 2️⃣ If authentication is successful, generate token
             if (authentication.isAuthenticated()) {
@@ -165,10 +164,10 @@ public class UserService {
                 // Extract the first role only, ignore permissions
                 String role = authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .filter(auth -> auth.startsWith("ROLE_"))                    // only roles
+                        .filter(auth -> auth.startsWith("ROLE_")) // only roles
                         .map(auth -> auth.replace("ROLE_", ""))
                         .findFirst()
-                        .orElse("USER");                                            // default fallback
+                        .orElse("USER"); // default fallback
 
                 return new AuthResponse(token, role);
             } else {
@@ -181,14 +180,15 @@ public class UserService {
         }
     }
 
-    //UPLOAD PIC
+    // UPLOAD PIC
     public String saveProfilePhoto(Long userId, MultipartFile file) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Create folder if not exists
         File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists())
+            dir.mkdirs();
 
         // Save file
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -203,7 +203,7 @@ public class UserService {
         return imageUrl;
     }
 
-    //DELETE PIC
+    // DELETE PIC
     public void deleteUserPhoto(Long userId) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -222,7 +222,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //SENDING RESET PASSWORD LINK
+    // SENDING RESET PASSWORD LINK
     public void sendResetLink(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
 
@@ -244,25 +244,24 @@ public class UserService {
         // Email message content
         String message = String.format("""
                 Hi %s,
-                
+
                 We received a request to reset your password.
                 Click the link below to set a new password:
-                
+
                 %s
-                
+
                 This link will expire in 15 minutes.
-                
+
                 - Dispute Tracking System Team
                 """, user.getName(), resetLink);
 
         emailService.sendEmail(
                 user.getEmail(),
                 "DTMS | Password Reset Request",
-                message
-        );
+                message);
     }
 
-    //TEMP PASSWORD CHANGE
+    // TEMP PASSWORD CHANGE
     public void changeTemporaryPassword(ResetPasswordRequest request) {
         User user = userRepository.findByResetToken(request.getToken())
                 .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
@@ -281,7 +280,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //PASSWORD RESET
+    // PASSWORD RESET
     public boolean resetPassword(String token, String newPassword) {
         User user = userRepository.findByResetToken(token)
                 .orElse(null);

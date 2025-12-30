@@ -1,10 +1,10 @@
 package com.disputetrackingsystem.controller;
 
 import com.disputetrackingsystem.model.DebitCard;
-import com.disputetrackingsystem.repository.DebitCardRepository;
 import com.disputetrackingsystem.service.DebitCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -15,24 +15,21 @@ public class DebitCardController {
     @Autowired
     private DebitCardService debitCardService;
 
-    @Autowired
-    private DebitCardRepository debitCardRepository;
-
-    //CREATE DEBIT CARDS ##
+    // CREATE DEBIT CARDS ##
     @PostMapping
     public DebitCard postDebitCard(@RequestBody DebitCard debitCard) {
         return debitCardService.createDebitCard(debitCard);
     }
 
-    //SHOW ALL DEBIT CARDS ##
+    // SHOW ALL DEBIT CARDS ##
     @GetMapping
     public List<DebitCard> getAllDebitCards() {
         return debitCardService.showAllDebitCards();
     }
 
-    //GET DEBIT CARD BY ID ##
+    // GET DEBIT CARD BY ID ##
     @GetMapping("/{id}")
-    public DebitCard getDebitCardById(@PathVariable Long id) {
+    public DebitCard getDebitCardById(@PathVariable @NonNull Long id) {
         return debitCardService.getDebitById(id);
     }
 

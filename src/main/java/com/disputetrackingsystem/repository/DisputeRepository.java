@@ -10,13 +10,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
 
-
-    //SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
+    // SHOW FILTERED DISPUTES(ALL/UNDER-VERIFICATION/UNDER-REVIEWED)
     Page<Dispute> findByReviewedByIsNull(Pageable pageable);
+
     Page<Dispute> findBySubStatus_NameIgnoreCase(String name, Pageable pageable);
 
     // Count Disputes by Sub-Status
@@ -30,12 +29,11 @@ public interface DisputeRepository extends JpaRepository<Dispute, Long> {
     // Find Dispute by Account Number
     Page<Dispute> findBySavingsAccountTransaction_SavingsAccount_AccountNumber(
             long accountNumber,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     // Get Dispute Raise Stat for individual user
     @Query("""
-                SELECT 
+                SELECT
                     SUM(CASE WHEN d.createdBy.id = :userId THEN 1 ELSE 0 END),
                     SUM(CASE WHEN d.reviewedBy.id = :userId THEN 1 ELSE 0 END)
                 FROM Dispute d
